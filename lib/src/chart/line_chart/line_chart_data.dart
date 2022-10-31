@@ -1573,6 +1573,8 @@ class LineTouchTooltipData with EquatableMixin {
   /// The tooltip background color.
   final Color tooltipBgColor;
 
+  final double elevation;
+
   /// Sets a rounded radius for the tooltip.
   final double tooltipRoundedRadius;
 
@@ -1618,6 +1620,7 @@ class LineTouchTooltipData with EquatableMixin {
   /// also you can set [fitInsideVertically] true to force it to shift inside the chart vertically.
   LineTouchTooltipData({
     Color? tooltipBgColor,
+    this.elevation = 0,
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
     double? tooltipMargin,
@@ -1656,6 +1659,7 @@ class LineTouchTooltipData with EquatableMixin {
         showOnTopOfTheChartBoxArea,
         rotateAngle,
         tooltipBorder,
+        elevation,
       ];
 }
 
