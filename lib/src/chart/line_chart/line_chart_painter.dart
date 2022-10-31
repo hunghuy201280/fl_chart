@@ -1155,6 +1155,27 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       drawCallback: () {
         canvasWrapper.drawRRect(roundedRect, _bgTouchTooltipPaint);
         canvasWrapper.drawRRect(roundedRect, _borderTouchTooltipPaint);
+        canvasWrapper.drawPath(
+          Path()
+            ..addRect(
+              Rect.fromPoints(
+                const Offset(-15, -15),
+                Offset(rect.size.width + 15, rect.size.height + 15),
+              ),
+            )
+            ..addOval(
+              Rect.fromPoints(
+                Offset.zero,
+                Offset(rect.size.width, rect.size.height),
+              ),
+            )
+            ..fillType = PathFillType.evenOdd,
+          Paint()
+            ..color = Colors.black.withAlpha(3)
+            ..maskFilter =
+                MaskFilter.blur(BlurStyle.normal, convertRadiusToSigma(3)),
+        );
+        ;
       },
     );
 
@@ -1196,6 +1217,10 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       topPosSeek += tp.height;
       topPosSeek += textsBelowMargin;
     }
+  }
+
+  static double convertRadiusToSigma(double radius) {
+    return radius * 0.57735 + 0.5;
   }
 
   @visibleForTesting
