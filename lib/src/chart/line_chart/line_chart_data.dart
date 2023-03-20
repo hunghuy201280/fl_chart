@@ -61,7 +61,6 @@ class LineChartData extends AxisChartData with EquatableMixin {
     super.backgroundColor,
   })  : lineBarsData = lineBarsData ?? const [],
         betweenBarsData = betweenBarsData ?? const [],
-        extraLinesData = extraLinesData ?? ExtraLinesData(),
         lineTouchData = lineTouchData ?? LineTouchData(),
         showingTooltipIndicators = showingTooltipIndicators ?? const [],
         super(
@@ -70,6 +69,7 @@ class LineChartData extends AxisChartData with EquatableMixin {
           titlesData: titlesData ?? FlTitlesData(),
           rangeAnnotations: rangeAnnotations ?? RangeAnnotations(),
           clipData: clipData ?? FlClipData.none(),
+          extraLinesData: extraLinesData = extraLinesData ?? ExtraLinesData(),
           minX: minX ??
               LineChartHelper.calculateMaxAxisValues(lineBarsData ?? const [])
                   .minX,
@@ -89,9 +89,6 @@ class LineChartData extends AxisChartData with EquatableMixin {
 
   /// Fills area between two [LineChartBarData] with a color or gradient.
   final List<BetweenBarsData> betweenBarsData;
-
-  /// [LineChart] draws some horizontal or vertical lines on above or below of everything
-  final ExtraLinesData extraLinesData;
 
   /// Handles touch behaviors and responses.
   final LineTouchData lineTouchData;
@@ -221,7 +218,7 @@ class LineChartBarData with EquatableMixin {
   /// an overshooting will happen, we don't have any idea to solve this at the moment,
   /// but you can set [preventCurveOverShooting] true, and update the threshold
   /// using [preventCurveOvershootingThreshold] to achieve an acceptable curve,
-  /// check this [issue](https://github.com/imaNNeoFighT/fl_chart/issues/25)
+  /// check this [issue](https://github.com/imaNNeo/fl_chart/issues/25)
   /// to overshooting understand the problem.
   ///
   /// [isStrokeCapRound] determines the shape of line's cap.
@@ -363,7 +360,7 @@ class LineChartBarData with EquatableMixin {
   final double curveSmoothness;
 
   /// Prevent overshooting when draw curve line with high value changes.
-  /// check this [issue](https://github.com/imaNNeoFighT/fl_chart/issues/25)
+  /// check this [issue](https://github.com/imaNNeo/fl_chart/issues/25)
   final bool preventCurveOverShooting;
 
   /// Applies threshold for [preventCurveOverShooting] algorithm.
@@ -1052,140 +1049,6 @@ bool showAllDots(FlSpot spot, LineChartBarData barData) {
   return true;
 }
 
-/// Holds data for drawing extra horizontal lines.
-///
-/// [LineChart] draws some [HorizontalLine] (set by [LineChartData.extraLinesData]),
-/// in below or above of everything, it draws from left to right side of the chart.
-class HorizontalLine extends FlLine with EquatableMixin {
-  /// [LineChart] draws horizontal lines from left to right side of the chart
-  /// in the provided [y] value, and color it using [color].
-  /// You can define the thickness using [strokeWidth]
-  ///
-  /// It draws a [label] over it.
-  ///
-  /// You can have a dashed line by filling [dashArray] with dash size and space respectively.
-  ///
-  /// It draws an image in left side of the chart, use [sizedPicture] for vectors,
-  /// or [image] for any kind of image.
-  HorizontalLine({
-    required this.y,
-    HorizontalLineLabel? label,
-    Color? color,
-    double? strokeWidth,
-    super.dashArray,
-    this.image,
-    this.sizedPicture,
-  })  : label = label ?? HorizontalLineLabel(),
-        super(
-          color: color ?? Colors.black,
-          strokeWidth: strokeWidth ?? 2,
-        );
-
-  /// Draws from left to right of the chart using the [y] value.
-  final double y;
-
-  /// Use it for any kind of image, to draw it in left side of the chart.
-  Image? image;
-
-  /// Use it for vector images, to draw it in left side of the chart.
-  SizedPicture? sizedPicture;
-
-  /// Draws a text label over the line.
-  final HorizontalLineLabel label;
-
-  /// Lerps a [HorizontalLine] based on [t] value, check [Tween.lerp].
-  static HorizontalLine lerp(HorizontalLine a, HorizontalLine b, double t) {
-    return HorizontalLine(
-      y: lerpDouble(a.y, b.y, t)!,
-      label: HorizontalLineLabel.lerp(a.label, b.label, t),
-      color: Color.lerp(a.color, b.color, t),
-      strokeWidth: lerpDouble(a.strokeWidth, b.strokeWidth, t),
-      dashArray: lerpIntList(a.dashArray, b.dashArray, t),
-      image: b.image,
-      sizedPicture: b.sizedPicture,
-    );
-  }
-
-  /// Used for equality check, see [EquatableMixin].
-  @override
-  List<Object?> get props => [
-        y,
-        label,
-        color,
-        strokeWidth,
-        dashArray,
-        image,
-        sizedPicture,
-      ];
-}
-
-/// Holds data for drawing extra vertical lines.
-///
-/// [LineChart] draws some [VerticalLine] (set by [LineChartData.extraLinesData]),
-/// in below or above of everything, it draws from bottom to top side of the chart.
-class VerticalLine extends FlLine with EquatableMixin {
-  /// [LineChart] draws vertical lines from bottom to top side of the chart
-  /// in the provided [x] value, and color it using [color].
-  /// You can define the thickness using [strokeWidth]
-  ///
-  /// It draws a [label] over it.
-  ///
-  /// You can have a dashed line by filling [dashArray] with dash size and space respectively.
-  ///
-  /// It draws an image in bottom side of the chart, use [sizedPicture] for vectors,
-  /// or [image] for any kind of image.
-  VerticalLine({
-    required this.x,
-    VerticalLineLabel? label,
-    Color? color,
-    double? strokeWidth,
-    super.dashArray,
-    this.image,
-    this.sizedPicture,
-  })  : label = label ?? VerticalLineLabel(),
-        super(
-          color: color ?? Colors.black,
-          strokeWidth: strokeWidth ?? 2,
-        );
-
-  /// Draws from bottom to top of the chart using the [x] value.
-  final double x;
-
-  /// Use it for any kind of image, to draw it in bottom side of the chart.
-  Image? image;
-
-  /// Use it for vector images, to draw it in bottom side of the chart.
-  SizedPicture? sizedPicture;
-
-  /// Draws a text label over the line.
-  final VerticalLineLabel label;
-
-  /// Lerps a [VerticalLine] based on [t] value, check [Tween.lerp].
-  static VerticalLine lerp(VerticalLine a, VerticalLine b, double t) {
-    return VerticalLine(
-      x: lerpDouble(a.x, b.x, t)!,
-      label: VerticalLineLabel.lerp(a.label, b.label, t),
-      color: Color.lerp(a.color, b.color, t),
-      strokeWidth: lerpDouble(a.strokeWidth, b.strokeWidth, t),
-      dashArray: lerpIntList(a.dashArray, b.dashArray, t),
-      image: b.image,
-      sizedPicture: b.sizedPicture,
-    );
-  }
-
-  /// Used for equality check, see [EquatableMixin].
-  @override
-  List<Object?> get props => [
-        x,
-        label,
-        color,
-        strokeWidth,
-        dashArray,
-        image,
-        sizedPicture,
-      ];
-}
-
 /// Shows a text label
 abstract class FlLineLabel with EquatableMixin {
   /// Draws a title on the line, align it with [alignment] over the line,
@@ -1221,207 +1084,9 @@ abstract class FlLineLabel with EquatableMixin {
       ];
 }
 
-/// Draws a title on the [HorizontalLine]
-class HorizontalLineLabel extends FlLineLabel with EquatableMixin {
-  /// Draws a title on the [HorizontalLine], align it with [alignment] over the line,
-  /// applies [padding] for spaces, and applies [style for changing color,
-  /// size, ... of the text.
-  /// Drawing text will retrieve through [labelResolver],
-  /// you can override it with your custom data.
-  /// /// [show] determines showing label or not.
-  HorizontalLineLabel({
-    EdgeInsets? padding,
-    super.style,
-    Alignment? alignment,
-    super.show = false,
-    String Function(HorizontalLine)? labelResolver,
-  })  : labelResolver =
-            labelResolver ?? HorizontalLineLabel.defaultLineLabelResolver,
-        super(
-          padding: padding ?? const EdgeInsets.all(6),
-          alignment: alignment ?? Alignment.topLeft,
-        );
-
-  /// Resolves a label for showing.
-  final String Function(HorizontalLine) labelResolver;
-
-  /// Returns the [HorizontalLine.y] as the drawing label.
-  static String defaultLineLabelResolver(HorizontalLine line) =>
-      line.y.toStringAsFixed(1);
-
-  /// Lerps a [HorizontalLineLabel] based on [t] value, check [Tween.lerp].
-  static HorizontalLineLabel lerp(
-    HorizontalLineLabel a,
-    HorizontalLineLabel b,
-    double t,
-  ) {
-    return HorizontalLineLabel(
-      padding:
-          EdgeInsets.lerp(a.padding as EdgeInsets, b.padding as EdgeInsets, t),
-      style: TextStyle.lerp(a.style, b.style, t),
-      alignment: Alignment.lerp(a.alignment, b.alignment, t),
-      labelResolver: b.labelResolver,
-      show: b.show,
-    );
-  }
-
-  /// Used for equality check, see [EquatableMixin].
-  @override
-  List<Object?> get props => [
-        labelResolver,
-        show,
-        padding,
-        style,
-        alignment,
-      ];
-}
-
-/// Draws a title on the [VerticalLine]
-class VerticalLineLabel extends FlLineLabel with EquatableMixin {
-  /// Draws a title on the [VerticalLine], align it with [alignment] over the line,
-  /// applies [padding] for spaces, and applies [style for changing color,
-  /// size, ... of the text.
-  /// Drawing text will retrieve through [labelResolver],
-  /// you can override it with your custom data.
-  /// [show] determines showing label or not.
-  VerticalLineLabel({
-    EdgeInsets? padding,
-    TextStyle? style,
-    Alignment? alignment,
-    bool? show,
-    String Function(VerticalLine)? labelResolver,
-  })  : labelResolver =
-            labelResolver ?? VerticalLineLabel.defaultLineLabelResolver,
-        super(
-          show: show ?? false,
-          padding: padding ?? const EdgeInsets.all(6),
-          style: style ??
-              const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-          alignment: alignment ?? Alignment.bottomRight,
-        );
-
-  /// Resolves a label for showing.
-  final String Function(VerticalLine) labelResolver;
-
-  /// Returns the [VerticalLine.x] as the drawing label.
-  static String defaultLineLabelResolver(VerticalLine line) =>
-      line.x.toStringAsFixed(1);
-
-  /// Lerps a [VerticalLineLabel] based on [t] value, check [Tween.lerp].
-  static VerticalLineLabel lerp(
-    VerticalLineLabel a,
-    VerticalLineLabel b,
-    double t,
-  ) {
-    return VerticalLineLabel(
-      padding:
-          EdgeInsets.lerp(a.padding as EdgeInsets, b.padding as EdgeInsets, t),
-      style: TextStyle.lerp(a.style, b.style, t),
-      alignment: Alignment.lerp(a.alignment, b.alignment, t),
-      labelResolver: b.labelResolver,
-      show: b.show,
-    );
-  }
-
-  /// Used for equality check, see [EquatableMixin].
-  @override
-  List<Object?> get props => [
-        labelResolver,
-        show,
-        padding,
-        style,
-        alignment,
-      ];
-}
-
-/// Holds data for showing a vector image inside the chart.
-///
-/// for example:
-/// ```
-/// Future<SizedPicture> loadSvg() async {
-///    const String rawSvg = 'your svg string';
-///    final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
-///    final sizedPicture = SizedPicture(svgRoot.toPicture(), 14, 14);
-///    return sizedPicture;
-///  }
-/// ```
-class SizedPicture with EquatableMixin {
-  /// [picture] is the showing image,
-  /// it can retrieve from a svg icon,
-  /// for example:
-  /// ```
-  ///    const String rawSvg = 'your svg string';
-  ///    final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
-  ///    final picture = svgRoot.toPicture()
-  /// ```
-  /// [width] and [height] determines the size of our picture.
-  SizedPicture(this.picture, this.width, this.height);
-
-  /// Is the showing image.
-  Picture picture;
-
-  /// width of our [picture].
-  int width;
-
-  /// height of our [picture].
-  int height;
-
-  /// Used for equality check, see [EquatableMixin].
-  @override
-  List<Object?> get props => [
-        picture,
-        width,
-        height,
-      ];
-}
-
-/// Draws some straight horizontal or vertical lines in the [LineChart]
-class ExtraLinesData with EquatableMixin {
-  /// [LineChart] draws some straight horizontal or vertical lines,
-  /// you should set [LineChartData.extraLinesData].
-  /// Draws horizontal lines using [horizontalLines],
-  /// and vertical lines using [verticalLines].
-  ///
-  /// If [extraLinesOnTop] sets true, it draws the line above the main bar lines, otherwise
-  /// it draws them below the main bar lines.
-  ExtraLinesData({
-    List<HorizontalLine>? horizontalLines,
-    List<VerticalLine>? verticalLines,
-    bool? extraLinesOnTop,
-  })  : horizontalLines = horizontalLines ?? const [],
-        verticalLines = verticalLines ?? const [],
-        extraLinesOnTop = extraLinesOnTop ?? true;
-  final List<HorizontalLine> horizontalLines;
-  final List<VerticalLine> verticalLines;
-
-  final bool extraLinesOnTop;
-
-  /// Lerps a [ExtraLinesData] based on [t] value, check [Tween.lerp].
-  static ExtraLinesData lerp(ExtraLinesData a, ExtraLinesData b, double t) {
-    return ExtraLinesData(
-      extraLinesOnTop: b.extraLinesOnTop,
-      horizontalLines:
-          lerpHorizontalLineList(a.horizontalLines, b.horizontalLines, t),
-      verticalLines: lerpVerticalLineList(a.verticalLines, b.verticalLines, t),
-    );
-  }
-
-  /// Used for equality check, see [EquatableMixin].
-  @override
-  List<Object?> get props => [
-        horizontalLines,
-        verticalLines,
-        extraLinesOnTop,
-      ];
-}
-
 /// Holds data to handle touch events, and touch responses in the [LineChart].
 ///
-/// There is a touch flow, explained [here](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
+/// There is a touch flow, explained [here](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
 /// in a simple way, each chart's renderer captures the touch events, and passes the pointerEvent
 /// to the painter, and gets touched spot, and wraps it into a concrete [LineTouchResponse].
 class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
@@ -1446,6 +1111,7 @@ class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
     bool? enabled,
     BaseTouchCallback<LineTouchResponse>? touchCallback,
     MouseCursorResolver<LineTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     LineTouchTooltipData? touchTooltipData,
     GetTouchedSpotIndicator? getTouchedSpotIndicator,
     double? touchSpotThreshold,
@@ -1461,7 +1127,12 @@ class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
         handleBuiltInTouches = handleBuiltInTouches ?? true,
         getTouchLineStart = getTouchLineStart ?? defaultGetTouchLineStart,
         getTouchLineEnd = getTouchLineEnd ?? defaultGetTouchLineEnd,
-        super(enabled ?? true, touchCallback, mouseCursorResolver);
+        super(
+          enabled ?? true,
+          touchCallback,
+          mouseCursorResolver,
+          longPressDuration,
+        );
 
   /// Configs of how touch tooltip popup.
   final LineTouchTooltipData touchTooltipData;
@@ -1493,6 +1164,7 @@ class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
     bool? enabled,
     BaseTouchCallback<LineTouchResponse>? touchCallback,
     MouseCursorResolver<LineTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     LineTouchTooltipData? touchTooltipData,
     GetTouchedSpotIndicator? getTouchedSpotIndicator,
     double? touchSpotThreshold,
@@ -1505,6 +1177,7 @@ class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
       enabled: enabled ?? this.enabled,
       touchCallback: touchCallback ?? this.touchCallback,
       mouseCursorResolver: mouseCursorResolver ?? this.mouseCursorResolver,
+      longPressDuration: longPressDuration ?? this.longPressDuration,
       touchTooltipData: touchTooltipData ?? this.touchTooltipData,
       getTouchedSpotIndicator:
           getTouchedSpotIndicator ?? this.getTouchedSpotIndicator,
@@ -1518,10 +1191,12 @@ class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         enabled,
         touchCallback,
         mouseCursorResolver,
+        longPressDuration,
         touchTooltipData,
         getTouchedSpotIndicator,
         touchSpotThreshold,
@@ -1618,6 +1293,8 @@ class LineTouchTooltipData with EquatableMixin {
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
     double? tooltipMargin,
+    FLHorizontalAlignment? tooltipHorizontalAlignment,
+    double? tooltipHorizontalOffset,
     double? maxContentWidth,
     GetLineTooltipItems? getTooltipItems,
     bool? fitInsideHorizontally,
@@ -1625,11 +1302,15 @@ class LineTouchTooltipData with EquatableMixin {
     bool? showOnTopOfTheChartBoxArea,
     double? rotateAngle,
     BorderSide? tooltipBorder,
-  })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
+  })
+      : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         tooltipMargin = tooltipMargin ?? 16,
+        tooltipHorizontalAlignment =
+            tooltipHorizontalAlignment ?? FLHorizontalAlignment.center,
+        tooltipHorizontalOffset = tooltipHorizontalOffset ?? 0,
         maxContentWidth = maxContentWidth ?? 120,
         getTooltipItems = getTooltipItems ?? defaultLineTooltipItem,
         fitInsideHorizontally = fitInsideHorizontally ?? false,
@@ -1650,6 +1331,12 @@ class LineTouchTooltipData with EquatableMixin {
 
   /// Applies a bottom margin for showing tooltip on top of rods.
   final double tooltipMargin;
+
+  /// Controls showing tooltip on left side, right side or center aligned with spot, default is center
+  final FLHorizontalAlignment tooltipHorizontalAlignment;
+
+  /// Applies horizontal offset for showing tooltip, default is zero.
+  final double tooltipHorizontalOffset;
 
   /// Restricts the tooltip's width.
   final double maxContentWidth;
@@ -1674,11 +1361,14 @@ class LineTouchTooltipData with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,
         tooltipMargin,
+        tooltipHorizontalAlignment,
+        tooltipHorizontalOffset,
         maxContentWidth,
         getTooltipItems,
         fitInsideHorizontally,

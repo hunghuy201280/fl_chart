@@ -8,7 +8,7 @@ import 'package:fl_chart/src/chart/line_chart/line_chart_painter.dart';
 import 'package:fl_chart/src/extensions/path_extension.dart';
 import 'package:fl_chart/src/utils/canvas_wrapper.dart';
 import 'package:fl_chart/src/utils/utils.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -2134,6 +2134,181 @@ void main() {
       expect(results[3]['from'], const Offset(50, 0));
       expect(results[3]['to'], const Offset(50, 100));
     });
+
+    test('should draw horizontal lines at max and min', () {
+      const viewSize = Size(100, 100);
+      final data = LineChartData(
+        minY: 0,
+        maxY: 10,
+        minX: 0,
+        maxX: 10,
+        titlesData: FlTitlesData(show: false),
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [
+            HorizontalLine(
+              y: 0,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+            HorizontalLine(
+              y: 10,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+          ],
+          extraLinesOnTop: false,
+        ),
+      );
+
+      final lineChartPainter = LineChartPainter();
+      final holder = PaintHolder<LineChartData>(data, data, 1);
+      final mockCanvasWrapper = MockCanvasWrapper();
+      when(mockCanvasWrapper.size).thenAnswer((realInvocation) => viewSize);
+      when(mockCanvasWrapper.canvas).thenReturn(MockCanvas());
+
+      final mockBuildContext = MockBuildContext();
+
+      lineChartPainter.drawExtraLines(
+        mockBuildContext,
+        mockCanvasWrapper,
+        holder,
+      );
+
+      verify(
+        mockCanvasWrapper.drawDashedLine(
+          any,
+          any,
+          argThat(
+            const TypeMatcher<Paint>().having(
+              (p0) => p0.color.value,
+              'colors match',
+              equals(Colors.cyanAccent.value),
+            ),
+          ),
+          holder.data.extraLinesData.horizontalLines[0].dashArray,
+        ),
+      ).called(2);
+    });
+
+    test('should draw vertical lines at max and min', () {
+      const viewSize = Size(100, 100);
+      final data = LineChartData(
+        minY: 0,
+        maxY: 10,
+        minX: 0,
+        maxX: 10,
+        titlesData: FlTitlesData(show: false),
+        extraLinesData: ExtraLinesData(
+          verticalLines: [
+            VerticalLine(
+              x: 0,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+            VerticalLine(
+              x: 10,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+          ],
+        ),
+      );
+
+      final lineChartPainter = LineChartPainter();
+      final holder = PaintHolder<LineChartData>(data, data, 1);
+      final mockCanvasWrapper = MockCanvasWrapper();
+      when(mockCanvasWrapper.size).thenAnswer((realInvocation) => viewSize);
+      when(mockCanvasWrapper.canvas).thenReturn(MockCanvas());
+
+      final mockBuildContext = MockBuildContext();
+
+      lineChartPainter.drawExtraLines(
+        mockBuildContext,
+        mockCanvasWrapper,
+        holder,
+      );
+
+      verify(
+        mockCanvasWrapper.drawDashedLine(
+          any,
+          any,
+          argThat(
+            const TypeMatcher<Paint>().having(
+              (p0) => p0.color.value,
+              'colors match',
+              equals(Colors.cyanAccent.value),
+            ),
+          ),
+          holder.data.extraLinesData.verticalLines[0].dashArray,
+        ),
+      ).called(2);
+    });
+
+    test('should not draw extra lines beyond chart max and min', () {
+      const viewSize = Size(100, 100);
+      final data = LineChartData(
+        minY: -1,
+        maxY: 10,
+        minX: -1,
+        maxX: 10,
+        titlesData: FlTitlesData(show: false),
+        extraLinesData: ExtraLinesData(
+          verticalLines: [
+            VerticalLine(
+              x: -1.1,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+            VerticalLine(
+              x: 11,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+          ],
+          horizontalLines: [
+            HorizontalLine(
+              y: -1.1,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+            HorizontalLine(
+              y: 11,
+              color: Colors.cyanAccent,
+              dashArray: [12, 22],
+            ),
+          ],
+        ),
+      );
+
+      final lineChartPainter = LineChartPainter();
+      final holder = PaintHolder<LineChartData>(data, data, 1);
+      final mockCanvasWrapper = MockCanvasWrapper();
+      when(mockCanvasWrapper.size).thenAnswer((realInvocation) => viewSize);
+      when(mockCanvasWrapper.canvas).thenReturn(MockCanvas());
+
+      final mockBuildContext = MockBuildContext();
+
+      lineChartPainter.drawExtraLines(
+        mockBuildContext,
+        mockCanvasWrapper,
+        holder,
+      );
+
+      verifyNever(
+        mockCanvasWrapper.drawDashedLine(
+          any,
+          any,
+          argThat(
+            const TypeMatcher<Paint>().having(
+              (p0) => p0.color.value,
+              'colors match',
+              equals(Colors.cyanAccent.value),
+            ),
+          ),
+          holder.data.extraLinesData.verticalLines[0].dashArray,
+        ),
+      );
+    });
   });
 
   group('drawTouchTooltip()', () {
@@ -2252,6 +2427,242 @@ void main() {
       expect((textPainter.text as TextSpan?)!.text, '0');
       expect((textPainter.text as TextSpan?)!.style, textStyle1);
       expect(drawOffset, const Offset(12, 52));
+    });
+
+    test('test 2', () {
+      const viewSize = Size(100, 100);
+
+      final barData = LineChartBarData(
+        show: true,
+        spots: const [
+          FlSpot(1, 1),
+          FlSpot(2, 2),
+          FlSpot(3, 3),
+          FlSpot(4, 4),
+          FlSpot.nullSpot,
+          FlSpot(5, 5),
+        ],
+        dotData: FlDotData(show: true),
+      );
+
+      final tooltipData = LineTouchTooltipData(
+        tooltipBgColor: const Color(0x11111111),
+        tooltipRoundedRadius: 12,
+        rotateAngle: 43,
+        maxContentWidth: 100,
+        tooltipMargin: 12,
+        tooltipHorizontalAlignment: FLHorizontalAlignment.left,
+        tooltipPadding: const EdgeInsets.all(12),
+        fitInsideHorizontally: false,
+        fitInsideVertically: true,
+        showOnTopOfTheChartBoxArea: false,
+        getTooltipItems: (List<LineBarSpot> touchedSpots) {
+          return touchedSpots
+              .map((e) => LineTooltipItem(e.barIndex.toString(), textStyle1))
+              .toList();
+        },
+        tooltipBorder: const BorderSide(color: Color(0x11111111), width: 2),
+      );
+      final data = LineChartData(
+        minY: 0,
+        maxY: 10,
+        minX: 0,
+        maxX: 10,
+        titlesData: FlTitlesData(show: false),
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [],
+          verticalLines: [],
+        ),
+        lineTouchData: LineTouchData(
+          touchTooltipData: tooltipData,
+        ),
+      );
+
+      final lineChartPainter = LineChartPainter();
+      final holder = PaintHolder<LineChartData>(data, data, 1);
+      final mockCanvasWrapper = MockCanvasWrapper();
+      when(mockCanvasWrapper.size).thenAnswer((realInvocation) => viewSize);
+      when(mockCanvasWrapper.canvas).thenReturn(MockCanvas());
+
+      final mockBuildContext = MockBuildContext();
+      final mockUtils = MockUtils();
+      Utils.changeInstance(mockUtils);
+      when(mockUtils.getThemeAwareTextStyle(any, any))
+          .thenAnswer((realInvocation) => textStyle1);
+      when(mockUtils.calculateRotationOffset(any, any))
+          .thenAnswer((realInvocation) => Offset.zero);
+      when(
+        mockCanvasWrapper.drawRotated(
+          size: anyNamed('size'),
+          rotationOffset: anyNamed('rotationOffset'),
+          drawOffset: anyNamed('drawOffset'),
+          angle: anyNamed('angle'),
+          drawCallback: anyNamed('drawCallback'),
+        ),
+      ).thenAnswer((realInvocation) {
+        final callback = realInvocation
+            .namedArguments[const Symbol('drawCallback')] as DrawCallback;
+        callback();
+      });
+      lineChartPainter.drawTouchTooltip(
+        mockBuildContext,
+        mockCanvasWrapper,
+        tooltipData,
+        barData.spots.first,
+        ShowingTooltipIndicators([
+          LineBarSpot(
+            barData,
+            0,
+            barData.spots.first,
+          ),
+        ]),
+        holder,
+      );
+
+      final result1 =
+          verify(mockCanvasWrapper.drawRRect(captureAny, captureAny))
+            ..called(2);
+      final rRect = result1.captured[0] as RRect;
+      final paint = result1.captured[1] as Paint;
+      expect(
+        rRect,
+        RRect.fromLTRBR(-28, 40, 10, 78, const Radius.circular(12)),
+      );
+      expect(paint.color, const Color(0x11111111));
+      final rRectBorder = result1.captured[2] as RRect;
+      final paintBorder = result1.captured[3] as Paint;
+      expect(
+        rRectBorder,
+        RRect.fromLTRBR(-28, 40, 10, 78, const Radius.circular(12)),
+      );
+      expect(paintBorder.color, const Color(0x11111111));
+      expect(paintBorder.strokeWidth, 2);
+
+      final result2 = verify(mockCanvasWrapper.drawText(captureAny, captureAny))
+        ..called(1);
+      final textPainter = result2.captured[0] as TextPainter;
+      final drawOffset = result2.captured[1] as Offset;
+      expect((textPainter.text as TextSpan?)!.text, '0');
+      expect((textPainter.text as TextSpan?)!.style, textStyle1);
+      expect(drawOffset, const Offset(-16, 52));
+    });
+
+    test('test 3', () {
+      const viewSize = Size(100, 100);
+
+      final barData = LineChartBarData(
+        show: true,
+        spots: const [
+          FlSpot(1, 1),
+          FlSpot(2, 2),
+          FlSpot(3, 3),
+          FlSpot(4, 4),
+          FlSpot.nullSpot,
+          FlSpot(5, 5),
+        ],
+        dotData: FlDotData(show: true),
+      );
+
+      final tooltipData = LineTouchTooltipData(
+        tooltipBgColor: const Color(0x11111111),
+        tooltipRoundedRadius: 12,
+        rotateAngle: 43,
+        maxContentWidth: 100,
+        tooltipMargin: 12,
+        tooltipHorizontalAlignment: FLHorizontalAlignment.right,
+        tooltipPadding: const EdgeInsets.all(12),
+        fitInsideHorizontally: false,
+        fitInsideVertically: true,
+        showOnTopOfTheChartBoxArea: false,
+        getTooltipItems: (List<LineBarSpot> touchedSpots) {
+          return touchedSpots
+              .map((e) => LineTooltipItem(e.barIndex.toString(), textStyle1))
+              .toList();
+        },
+        tooltipBorder: const BorderSide(color: Color(0x11111111), width: 2),
+      );
+      final data = LineChartData(
+        minY: 0,
+        maxY: 10,
+        minX: 0,
+        maxX: 10,
+        titlesData: FlTitlesData(show: false),
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [],
+          verticalLines: [],
+        ),
+        lineTouchData: LineTouchData(
+          touchTooltipData: tooltipData,
+        ),
+      );
+
+      final lineChartPainter = LineChartPainter();
+      final holder = PaintHolder<LineChartData>(data, data, 1);
+      final mockCanvasWrapper = MockCanvasWrapper();
+      when(mockCanvasWrapper.size).thenAnswer((realInvocation) => viewSize);
+      when(mockCanvasWrapper.canvas).thenReturn(MockCanvas());
+
+      final mockBuildContext = MockBuildContext();
+      final mockUtils = MockUtils();
+      Utils.changeInstance(mockUtils);
+      when(mockUtils.getThemeAwareTextStyle(any, any))
+          .thenAnswer((realInvocation) => textStyle1);
+      when(mockUtils.calculateRotationOffset(any, any))
+          .thenAnswer((realInvocation) => Offset.zero);
+      when(
+        mockCanvasWrapper.drawRotated(
+          size: anyNamed('size'),
+          rotationOffset: anyNamed('rotationOffset'),
+          drawOffset: anyNamed('drawOffset'),
+          angle: anyNamed('angle'),
+          drawCallback: anyNamed('drawCallback'),
+        ),
+      ).thenAnswer((realInvocation) {
+        final callback = realInvocation
+            .namedArguments[const Symbol('drawCallback')] as DrawCallback;
+        callback();
+      });
+      lineChartPainter.drawTouchTooltip(
+        mockBuildContext,
+        mockCanvasWrapper,
+        tooltipData,
+        barData.spots.first,
+        ShowingTooltipIndicators([
+          LineBarSpot(
+            barData,
+            0,
+            barData.spots.first,
+          ),
+        ]),
+        holder,
+      );
+
+      final result1 =
+          verify(mockCanvasWrapper.drawRRect(captureAny, captureAny))
+            ..called(2);
+      final rRect = result1.captured[0] as RRect;
+      final paint = result1.captured[1] as Paint;
+      expect(
+        rRect,
+        RRect.fromLTRBR(10, 40, 48, 78, const Radius.circular(12)),
+      );
+      expect(paint.color, const Color(0x11111111));
+      final rRectBorder = result1.captured[2] as RRect;
+      final paintBorder = result1.captured[3] as Paint;
+      expect(
+        rRectBorder,
+        RRect.fromLTRBR(10, 40, 48, 78, const Radius.circular(12)),
+      );
+      expect(paintBorder.color, const Color(0x11111111));
+      expect(paintBorder.strokeWidth, 2);
+
+      final result2 = verify(mockCanvasWrapper.drawText(captureAny, captureAny))
+        ..called(1);
+      final textPainter = result2.captured[0] as TextPainter;
+      final drawOffset = result2.captured[1] as Offset;
+      expect((textPainter.text as TextSpan?)!.text, '0');
+      expect((textPainter.text as TextSpan?)!.style, textStyle1);
+      expect(drawOffset, const Offset(22, 52));
     });
   });
 

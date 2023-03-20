@@ -33,8 +33,6 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       ..color = const Color(0x00000000)
       ..blendMode = BlendMode.dstIn;
 
-    _extraLinesPaint = Paint()..style = PaintingStyle.stroke;
-
     _touchLinePaint = Paint()
       ..style = PaintingStyle.stroke
       ..color = Colors.black;
@@ -43,22 +41,21 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       ..style = PaintingStyle.fill
       ..color = Colors.white;
 
-    _imagePaint = Paint();
-
     _borderTouchTooltipPaint = Paint()
       ..style = PaintingStyle.stroke
       ..color = Colors.transparent
       ..strokeWidth = 1.0;
   }
+
   late Paint _barPaint;
   late Paint _barAreaPaint;
   late Paint _barAreaLinesPaint;
   late Paint _clearBarAreaPaint;
-  late Paint _extraLinesPaint;
   late Paint _touchLinePaint;
   late Paint _bgTouchTooltipPaint;
-  late Paint _imagePaint;
   late Paint _borderTouchTooltipPaint;
+  late Paint _extraLinesPaint;
+  late Paint _imagePaint;
 
   /// Paints [LineChartData] into the provided canvas.
   @override
@@ -93,7 +90,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     }
 
     if (!data.extraLinesData.extraLinesOnTop) {
-      drawExtraLines(context, canvasWrapper, holder);
+      super.drawExtraLines(context, canvasWrapper, holder);
     }
 
     final lineIndexDrawingInfo = <LineIndexDrawingInfo>[];
@@ -110,7 +107,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       drawDots(canvasWrapper, barData, holder);
 
       if (data.extraLinesData.extraLinesOnTop) {
-        drawExtraLines(context, canvasWrapper, holder);
+        super.drawExtraLines(context, canvasWrapper, holder);
       }
 
       final indicatorsData = data.lineTouchData
@@ -125,6 +122,9 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       for (var j = 0; j < barData.showingIndicators.length; j++) {
         final indicatorData = indicatorsData[j];
         final index = barData.showingIndicators[j];
+        if (index < 0 || index >= barData.spots.length) {
+          continue;
+        }
         final spot = barData.spots[index];
 
         if (indicatorData == null) {
@@ -958,12 +958,11 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     canvasWrapper.drawPath(barPath, _barPaint);
   }
 
+  @override
   @visibleForTesting
-  void drawExtraLines(
-    BuildContext context,
-    CanvasWrapper canvasWrapper,
-    PaintHolder<LineChartData> holder,
-  ) {
+  void drawExtraLines(BuildContext context,
+      CanvasWrapper canvasWrapper,
+      PaintHolder<LineChartData> holder,) {
     final data = holder.data;
     final viewSize = canvasWrapper.size;
 
@@ -1011,7 +1010,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
         if (line.label.show) {
           final label = line.label;
           final style =
-              TextStyle(fontSize: 11, color: line.color).merge(label.style);
+          TextStyle(fontSize: 11, color: line.color).merge(label.style);
           final padding = label.padding as EdgeInsets;
 
           final span = TextSpan(
@@ -1071,7 +1070,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
           final centerX = line.image!.width / 2;
           final centerY = line.image!.height / 2;
           final centeredImageOffset =
-              Offset(to.dx - centerX, viewSize.height - centerY);
+          Offset(to.dx - centerX, viewSize.height - centerY);
           canvasWrapper.drawImage(
             line.image!,
             centeredImageOffset,
@@ -1082,7 +1081,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
         if (line.label.show) {
           final label = line.label;
           final style =
-              TextStyle(fontSize: 11, color: line.color).merge(label.style);
+          TextStyle(fontSize: 11, color: line.color).merge(label.style);
           final padding = label.padding as EdgeInsets;
 
           final span = TextSpan(
@@ -1197,9 +1196,16 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
           mostTopOffset.dy - tooltipHeight - tooltipData.tooltipMargin;
     }
 
+    final tooltipLeftPosition = getTooltipLeft(
+      mostTopOffset.dx,
+      tooltipWidth,
+      tooltipData.tooltipHorizontalAlignment,
+      tooltipData.tooltipHorizontalOffset,
+    );
+
     /// draw the background rect with rounded radius
     var rect = Rect.fromLTWH(
-      mostTopOffset.dx - (tooltipWidth / 2),
+      tooltipLeftPosition,
       tooltipTopPosition,
       tooltipWidth,
       tooltipHeight,

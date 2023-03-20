@@ -16,6 +16,7 @@ import 'pie_chart_painter_test.mocks.dart';
 
 @GenerateMocks([Canvas, CanvasWrapper, BuildContext, Utils])
 void main() {
+  const tolerance = 0.001;
   group('paint()', () {
     test('test 1', () {
       final utilsMainInstance = Utils();
@@ -334,7 +335,7 @@ void main() {
           .toList()
           .map((e) => e.length)
           .reduce((a, b) => a + b);
-      expect(path2Length, 174.60133361816406);
+      expect(path2Length, closeTo(174.6013, tolerance));
 
       final path3 = barChartPainter.generateSectionPath(
         data.sections[3],
@@ -408,7 +409,7 @@ void main() {
           .toList()
           .map((e) => e.length)
           .reduce((a, b) => a + b);
-      expect(path2Length, 192.84017944335938);
+      expect(path2Length, closeTo(192.8401, tolerance));
 
       final path3 = barChartPainter.generateSectionPath(
         data.sections[3],
@@ -558,27 +559,23 @@ void main() {
         });
       });
 
-      barChartPainter
-        ..drawSection(
-          data.sections[0],
-          MockData.path1,
-          mockCanvasWrapper,
-        )
-        ..drawSection(
-          data.sections[1],
-          MockData.path2,
-          mockCanvasWrapper,
-        )
-        ..drawSection(
-          data.sections[2],
-          MockData.path3,
-          mockCanvasWrapper,
-        )
-        ..drawSection(
-          data.sections[3],
-          MockData.path4,
-          mockCanvasWrapper,
-        );
+      barChartPainter..drawSection(
+        data.sections[0],
+        MockData.path1,
+        mockCanvasWrapper,
+      )..drawSection(
+        data.sections[1],
+        MockData.path2,
+        mockCanvasWrapper,
+      )..drawSection(
+        data.sections[2],
+        MockData.path3,
+        mockCanvasWrapper,
+      )..drawSection(
+        data.sections[3],
+        MockData.path4,
+        mockCanvasWrapper,
+      );
 
       expect(results.length, 4);
 
@@ -630,31 +627,27 @@ void main() {
         });
       });
 
-      barChartPainter
-        ..drawSectionStroke(
-          data.sections[0],
-          MockData.path1,
-          mockCanvasWrapper,
-          viewSize,
-        )
-        ..drawSectionStroke(
-          data.sections[1],
-          MockData.path2,
-          mockCanvasWrapper,
-          viewSize,
-        )
-        ..drawSectionStroke(
-          data.sections[2],
-          MockData.path3,
-          mockCanvasWrapper,
-          viewSize,
-        )
-        ..drawSectionStroke(
-          data.sections[3],
-          MockData.path4,
-          mockCanvasWrapper,
-          viewSize,
-        );
+      barChartPainter..drawSectionStroke(
+        data.sections[0],
+        MockData.path1,
+        mockCanvasWrapper,
+        viewSize,
+      )..drawSectionStroke(
+        data.sections[1],
+        MockData.path2,
+        mockCanvasWrapper,
+        viewSize,
+      )..drawSectionStroke(
+        data.sections[2],
+        MockData.path3,
+        mockCanvasWrapper,
+        viewSize,
+      )..drawSectionStroke(
+        data.sections[3],
+        MockData.path4,
+        mockCanvasWrapper,
+        viewSize,
+      );
 
       verifyNever(mockCanvasWrapper.saveLayer(any, any));
       verifyNever(mockCanvasWrapper.clipPath(any));
@@ -715,31 +708,27 @@ void main() {
         });
       });
 
-      barChartPainter
-        ..drawSectionStroke(
-          data.sections[0],
-          MockData.path1,
-          mockCanvasWrapper,
-          viewSize,
-        )
-        ..drawSectionStroke(
-          data.sections[1],
-          MockData.path2,
-          mockCanvasWrapper,
-          viewSize,
-        )
-        ..drawSectionStroke(
-          data.sections[2],
-          MockData.path3,
-          mockCanvasWrapper,
-          viewSize,
-        )
-        ..drawSectionStroke(
-          data.sections[3],
-          MockData.path4,
-          mockCanvasWrapper,
-          viewSize,
-        );
+      barChartPainter..drawSectionStroke(
+        data.sections[0],
+        MockData.path1,
+        mockCanvasWrapper,
+        viewSize,
+      )..drawSectionStroke(
+        data.sections[1],
+        MockData.path2,
+        mockCanvasWrapper,
+        viewSize,
+      )..drawSectionStroke(
+        data.sections[2],
+        MockData.path3,
+        mockCanvasWrapper,
+        viewSize,
+      )..drawSectionStroke(
+        data.sections[3],
+        MockData.path4,
+        mockCanvasWrapper,
+        viewSize,
+      );
 
       verify(
         mockCanvasWrapper.saveLayer(

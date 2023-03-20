@@ -6,7 +6,7 @@ Don't forget that `open-source` makes no sense without contributors. No matter h
 This file is intended to be a guide for those who are interested in contributing to the FL Chart.
 
 #### Below are the people who has contributed to the FL Chart. We hope we have your picture here soon.
-[![](https://opencollective.com/fl_chart/contributors.svg?width=890&button=false)](https://github.com/imaNNeoFighT/fl_chart/graphs/contributors)
+[![](https://opencollective.com/fl_chart/contributors.svg?width=890&button=false)](https://github.com/imaNNeo/fl_chart/graphs/contributors)
 
 ## Let's get Started
 
@@ -36,24 +36,35 @@ If you are going to fix or improve something, please find and mention the relate
 In case you couldn't find any issue, it's better to create an issue to explain what's the issue that you are going to fix.
 
 ## Let's start by our drawing architecture
-We have a *_chart_painter.dart class per each chart type. It draws elements into the Canvas.
-We made the CanvasWrapper class, because we wanted to test draw functions.
-CanvasWrapper class holds a canvas and all draw functions proxies through it.
-You should use it for drawing on the canvas, Instead of direct accessing to canvas.
-It makes draw functions testable.
 
-<img src="https://github.com/imaNNeoFighT/fl_chart/raw/master/repo_files/images/architecture/fl_chart_architecture.jpg" />
+We have a *_chart_painter.dart class per each chart type. It draws elements into the Canvas. We made
+the CanvasWrapper class, because we wanted to test draw functions. CanvasWrapper class holds a
+canvas and all draw functions proxies through it. You should use it for drawing on the canvas,
+Instead of direct accessing to canvas. It makes draw functions testable.
+
+<img src="https://github.com/imaNNeo/fl_chart/raw/master/repo_files/images/architecture/fl_chart_architecture.jpg" />
 
 (made with [draw.io](https://drive.google.com/file/d/1bj-2TqTRUh80dRKJk10drPNeA3fp3EA8/view))
 
+## Keep your branch updated
+
+While you are developing your branch, It is common that your branch gets outdated and you need to
+update your branch with the `master` branch. To do that, please use `rebase` instead of `merge`.
+Because when you finish the PR, we must `rebase` your branch and merge it with the master. The
+reason that we prefer `rebase` over `merge` is the simplicity of the commit history. It allows us to
+have sequential commits in the `master`
+[This article](https://www.atlassian.com/git/tutorials/merging-vs-rebasing) might help to understand
+it better.
+
 ## Checking Your Code's Quality
 
-After you have made your changes, you have to make sure your code works
-correctly and meets our guidelines. Our guidelines are:
+After you have made your changes, you have to make sure your code works correctly and meets our
+guidelines. Our guidelines are:
 
 You can simply run `make checkstyle`, and if you faced any formatting problem, run `make format`.
 
 ##### Run `make checkstyle` to ensure that your code is formatted correctly
+
 - It runs `flutter analyze` to verify that there is no any warning or error.
 - It runs `flutter format --set-exit-if-changed --dry-run .` to verify that code has formatted correctly.
 
@@ -70,23 +81,36 @@ You can simply run `make checkstyle`, and if you faced any formatting problem, r
 ## Test coverage (unit tests)
 We should write unit-test for our written code. If you are not familiar with unit-tests, please start from [here](https://docs.flutter.dev/cookbook/testing/unit/introduction).
 
-[Mockito](https://pub.dev/packages/mockito) is the library that we use to mock our classes, please read more about it from their docs [here](https://github.com/dart-lang/mockito#lets-create-mocks).
+[Mockito](https://pub.dev/packages/mockito) is the library that we use to mock our classes, please
+read more about it from their docs [here](https://github.com/dart-lang/mockito#lets-create-mocks).
 
-Our code coverage is calculated by [Codecov](https://app.codecov.io/gh/imaNNeoFighT/fl_chart) (Our coverage is [![codecov](https://codecov.io/gh/imaNNeoFighT/fl_chart/branch/master/graph/badge.svg?token=XBhsIZBbZG)](https://codecov.io/gh/imaNNeoFighT/fl_chart)
- at the moment)
+Our code coverage is calculated by [Codecov](https://app.codecov.io/gh/imaNNeo/fl_chart) (Our
+coverage
+is [![codecov](https://codecov.io/gh/imaNNeo/fl_chart/branch/master/graph/badge.svg?token=XBhsIZBbZG)](https://codecov.io/gh/imaNNeo/fl_chart)
+at the moment)
 
-When you push something in your PR (after approving your PR by one of us), you see a coverage report which describes how much coverage is increased or decreased by your code (You can check the details to see which part of your code made the change). 
+When you push something in your PR (after approving your PR by one of us), you see a coverage report
+which describes how much coverage is increased or decreased by your code (You can check the details
+to see which part of your code made the change).
 
 Please make sure that your code is **not decreasing** the coverage.
 
 ## Changelog
-We have a file called [CHANGELOG.md](https://github.com/imaNNeoFighT/fl_chart/blob/master/CHANGELOG.md) which contains the history of our versions.
 
-Please check it to understand how it works and how is the convention. Simply new versions added at the top of the CHANGELOG.md file. You can find the [first version (oldest)](https://github.com/imaNNeoFighT/fl_chart/blob/master/CHANGELOG.md#001---released-on-2019-june-4) at the bottom of the file.
+We have a file called [CHANGELOG.md](https://github.com/imaNNeo/fl_chart/blob/master/CHANGELOG.md)
+which contains the history of our versions.
 
-When you are done in your PR, it's time to write a changelog for you changes. 
+Please check it to understand how it works and how is the convention. Simply new versions added at
+the top of the CHANGELOG.md file. You can find
+the [first version (oldest)](https://github.com/imaNNeo/fl_chart/blob/master/CHANGELOG.md#001---released-on-2019-june-4)
+at the bottom of the file.
 
-Most of the times, there will be a [newVersion](https://github.com/imaNNeoFighT/fl_chart/blob/master/CHANGELOG.md#newversion) tag at the top of the `CHANGELOG.md` file in the `master` branch. If it doesn't exist, you can write it and write your change below that.
+When you are done in your PR, it's time to write a changelog for you changes.
+
+Most of the times, there will be
+a [newVersion](https://github.com/imaNNeo/fl_chart/blob/master/CHANGELOG.md#newversion) tag at the
+top of the `CHANGELOG.md` file in the `master` branch. If it doesn't exist, you can write it and
+write your change below that.
 
 Each change should be started with one of the following prefixes:
 1. **IMPROVEMENT** (When you are improving something, for example improving performance)

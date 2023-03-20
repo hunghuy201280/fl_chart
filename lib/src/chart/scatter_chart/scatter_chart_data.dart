@@ -243,7 +243,7 @@ class ScatterSpot extends FlSpot with EquatableMixin {
 
 /// Holds data to handle touch events, and touch responses in the [ScatterChart].
 ///
-/// There is a touch flow, explained [here](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
+/// There is a touch flow, explained [here](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
 /// in a simple way, each chart's renderer captures the touch events, and passes the pointerEvent
 /// to the painter, and gets touched spot, and wraps it into a concrete [ScatterTouchResponse].
 class ScatterTouchData extends FlTouchData<ScatterTouchResponse>
@@ -267,13 +267,19 @@ class ScatterTouchData extends FlTouchData<ScatterTouchResponse>
     bool? enabled,
     BaseTouchCallback<ScatterTouchResponse>? touchCallback,
     MouseCursorResolver<ScatterTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     ScatterTouchTooltipData? touchTooltipData,
     double? touchSpotThreshold,
     bool? handleBuiltInTouches,
   })  : touchTooltipData = touchTooltipData ?? ScatterTouchTooltipData(),
         touchSpotThreshold = touchSpotThreshold ?? 0,
         handleBuiltInTouches = handleBuiltInTouches ?? true,
-        super(enabled ?? true, touchCallback, mouseCursorResolver);
+        super(
+          enabled ?? true,
+          touchCallback,
+          mouseCursorResolver,
+          longPressDuration,
+        );
 
   /// show a tooltip on touched spots
   final ScatterTouchTooltipData touchTooltipData;
@@ -291,6 +297,7 @@ class ScatterTouchData extends FlTouchData<ScatterTouchResponse>
     bool? enabled,
     BaseTouchCallback<ScatterTouchResponse>? touchCallback,
     MouseCursorResolver<ScatterTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     ScatterTouchTooltipData? touchTooltipData,
     double? touchSpotThreshold,
     bool? handleBuiltInTouches,
@@ -299,6 +306,7 @@ class ScatterTouchData extends FlTouchData<ScatterTouchResponse>
       enabled: enabled ?? this.enabled,
       touchCallback: touchCallback ?? this.touchCallback,
       mouseCursorResolver: mouseCursorResolver ?? this.mouseCursorResolver,
+      longPressDuration: longPressDuration ?? this.longPressDuration,
       touchTooltipData: touchTooltipData ?? this.touchTooltipData,
       handleBuiltInTouches: handleBuiltInTouches ?? this.handleBuiltInTouches,
       touchSpotThreshold: touchSpotThreshold ?? this.touchSpotThreshold,
@@ -307,10 +315,12 @@ class ScatterTouchData extends FlTouchData<ScatterTouchResponse>
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         enabled,
         touchCallback,
         mouseCursorResolver,
+        longPressDuration,
         touchTooltipData,
         touchSpotThreshold,
         handleBuiltInTouches,
@@ -389,16 +399,22 @@ class ScatterTouchTooltipData with EquatableMixin {
     Color? tooltipBgColor,
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
+    FLHorizontalAlignment? tooltipHorizontalAlignment,
+    double? tooltipHorizontalOffset,
     double? maxContentWidth,
     GetScatterTooltipItems? getTooltipItems,
     bool? fitInsideHorizontally,
     bool? fitInsideVertically,
     double? rotateAngle,
     BorderSide? tooltipBorder,
-  })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
+  })
+      : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        tooltipHorizontalAlignment =
+            tooltipHorizontalAlignment ?? FLHorizontalAlignment.center,
+        tooltipHorizontalOffset = tooltipHorizontalOffset ?? 0,
         maxContentWidth = maxContentWidth ?? 120,
         getTooltipItems = getTooltipItems ?? defaultScatterTooltipItem,
         fitInsideHorizontally = fitInsideHorizontally ?? false,
@@ -415,6 +431,12 @@ class ScatterTouchTooltipData with EquatableMixin {
 
   /// Applies a padding for showing contents inside the tooltip.
   final EdgeInsets tooltipPadding;
+
+  /// Controls showing tooltip on left side, right side or center aligned with spot, default is center
+  final FLHorizontalAlignment tooltipHorizontalAlignment;
+
+  /// Applies horizontal offset for showing tooltip, default is zero.
+  final double tooltipHorizontalOffset;
 
   /// Restricts the tooltip's width.
   final double maxContentWidth;
@@ -436,10 +458,13 @@ class ScatterTouchTooltipData with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,
+        tooltipHorizontalAlignment,
+        tooltipHorizontalOffset,
         maxContentWidth,
         getTooltipItems,
         fitInsideHorizontally,
@@ -454,6 +479,8 @@ class ScatterTouchTooltipData with EquatableMixin {
     Color? tooltipBgColor,
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
+    FLHorizontalAlignment? tooltipHorizontalAlignment,
+    double? tooltipHorizontalOffset,
     double? maxContentWidth,
     GetScatterTooltipItems? getTooltipItems,
     bool? fitInsideHorizontally,
@@ -465,6 +492,10 @@ class ScatterTouchTooltipData with EquatableMixin {
       tooltipBgColor: tooltipBgColor ?? this.tooltipBgColor,
       tooltipRoundedRadius: tooltipRoundedRadius ?? this.tooltipRoundedRadius,
       tooltipPadding: tooltipPadding ?? this.tooltipPadding,
+      tooltipHorizontalAlignment:
+          tooltipHorizontalAlignment ?? this.tooltipHorizontalAlignment,
+      tooltipHorizontalOffset:
+          tooltipHorizontalOffset ?? this.tooltipHorizontalOffset,
       maxContentWidth: maxContentWidth ?? this.maxContentWidth,
       getTooltipItems: getTooltipItems ?? this.getTooltipItems,
       fitInsideHorizontally:

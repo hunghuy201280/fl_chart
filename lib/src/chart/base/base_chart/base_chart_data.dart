@@ -80,7 +80,7 @@ class FlBorderData with EquatableMixin {
 
 /// Holds data to handle touch events, and touch responses in abstract way.
 ///
-/// There is a touch flow, explained [here](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
+/// There is a touch flow, explained [here](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
 /// in a simple way, each chart's renderer captures the touch events, and passes the pointerEvent
 /// to the painter, and gets touched spot, and wraps it into a concrete [BaseTouchResponse].
 abstract class FlTouchData<R extends BaseTouchResponse> with EquatableMixin {
@@ -89,6 +89,7 @@ abstract class FlTouchData<R extends BaseTouchResponse> with EquatableMixin {
     this.enabled,
     this.touchCallback,
     this.mouseCursorResolver,
+    this.longPressDuration,
   );
 
   /// You can disable or enable the touch system using [enabled] flag,
@@ -104,12 +105,17 @@ abstract class FlTouchData<R extends BaseTouchResponse> with EquatableMixin {
   /// based on the provided [FlTouchEvent] and [BaseTouchResponse]
   final MouseCursorResolver<R>? mouseCursorResolver;
 
+  /// This property that allows to customize the duration of the longPress gesture.
+  /// default to 500 milliseconds refer to [kLongPressTimeout].
+  final Duration? longPressDuration;
+
   /// Used for equality check, see [EquatableMixin].
   @override
   List<Object?> get props => [
         enabled,
         touchCallback,
         mouseCursorResolver,
+        longPressDuration,
       ];
 }
 
@@ -183,4 +189,16 @@ typedef MouseCursorResolver<R extends BaseTouchResponse> = MouseCursor Function(
 /// This class holds the touch response details of charts.
 abstract class BaseTouchResponse {
   BaseTouchResponse();
+}
+
+/// Controls an element horizontal alignment to given point.
+enum FLHorizontalAlignment {
+  /// Element shown horizontally center aligned to a given point.
+  center,
+
+  /// Element shown on the left side of the given point.
+  left,
+
+  /// Element shown on the right side of the given point.
+  right,
 }

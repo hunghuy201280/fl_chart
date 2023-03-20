@@ -31,6 +31,9 @@ class BarChartData extends AxisChartData with EquatableMixin {
   /// You can annotate some regions with a highlight color using [rangeAnnotations].
   ///
   /// You can modify [barTouchData] to customize touch behaviors and responses.
+  ///
+  /// Horizontal lines are drawn with [extraLinesData]. Vertical lines will not be painted if received.
+  /// Please see issue #1149 (https://github.com/imaNNeo/fl_chart/issues/1149) for vertical lines.
   BarChartData({
     List<BarChartGroupData>? barGroups,
     double? groupsSpace,
@@ -44,6 +47,7 @@ class BarChartData extends AxisChartData with EquatableMixin {
     super.borderData,
     RangeAnnotations? rangeAnnotations,
     super.backgroundColor,
+    ExtraLinesData? extraLinesData,
   })  : barGroups = barGroups ?? const [],
         groupsSpace = groupsSpace ?? 16,
         alignment = alignment ?? BarChartAlignment.spaceEvenly,
@@ -60,6 +64,7 @@ class BarChartData extends AxisChartData with EquatableMixin {
           gridData: gridData ?? FlGridData(),
           rangeAnnotations: rangeAnnotations ?? RangeAnnotations(),
           touchData: barTouchData ?? BarTouchData(),
+          extraLinesData: extraLinesData ?? ExtraLinesData(),
           minX: 0,
           maxX: 1,
           maxY: maxY ??
@@ -95,6 +100,7 @@ class BarChartData extends AxisChartData with EquatableMixin {
     double? minY,
     double? baselineY,
     Color? backgroundColor,
+    ExtraLinesData? extraLinesData,
   }) {
     return BarChartData(
       barGroups: barGroups ?? this.barGroups,
@@ -109,6 +115,7 @@ class BarChartData extends AxisChartData with EquatableMixin {
       minY: minY ?? this.minY,
       baselineY: baselineY ?? this.baselineY,
       backgroundColor: backgroundColor ?? this.backgroundColor,
+      extraLinesData: extraLinesData ?? this.extraLinesData,
     );
   }
 
@@ -130,6 +137,8 @@ class BarChartData extends AxisChartData with EquatableMixin {
         minY: lerpDouble(a.minY, b.minY, t),
         baselineY: lerpDouble(a.baselineY, b.baselineY, t),
         backgroundColor: Color.lerp(a.backgroundColor, b.backgroundColor, t),
+        extraLinesData:
+            ExtraLinesData.lerp(a.extraLinesData, b.extraLinesData, t),
       );
     } else {
       throw Exception('Illegal State');
@@ -151,6 +160,7 @@ class BarChartData extends AxisChartData with EquatableMixin {
         borderData,
         rangeAnnotations,
         backgroundColor,
+        extraLinesData,
       ];
 }
 
@@ -323,14 +333,7 @@ class BarChartRodData with EquatableMixin {
         borderRadius = Utils().normalizeBorderRadius(borderRadius, width ?? 8),
         borderSide = Utils().normalizeBorderSide(borderSide, width ?? 8),
         backDrawRodData = backDrawRodData ?? BackgroundBarChartRodData(),
-        rodStackItems = rodStackItems ?? const [] {
-    assert(
-      (gradient == null && this.color != null) ||
-          (this.color == null && gradient != null),
-      'You cannot provide both color and gradient at the same time, '
-      'color is ${this.color} and gradient is $gradient',
-    );
-  }
+        rodStackItems = rodStackItems ?? const [];
 
   /// [BarChart] renders rods vertically from [fromY].
   final double fromY;
@@ -523,14 +526,7 @@ class BackgroundBarChartRodData with EquatableMixin {
         toY = toY ?? 0,
         show = show ?? false,
         color = color ??
-            ((color == null && gradient == null) ? Colors.blueGrey : null) {
-    assert(
-      (gradient == null && this.color != null) ||
-          (this.color == null && gradient != null),
-      'You cannot provide both color and gradient at the same time, '
-      'color is ${this.color} and gradient is $gradient',
-    );
-  }
+            ((color == null && gradient == null) ? Colors.blueGrey : null);
 
   /// Determines to show or hide this
   final bool show;
@@ -580,7 +576,7 @@ class BackgroundBarChartRodData with EquatableMixin {
 
 /// Holds data to handle touch events, and touch responses in the [BarChart].
 ///
-/// There is a touch flow, explained [here](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
+/// There is a touch flow, explained [here](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
 /// in a simple way, each chart's renderer captures the touch events, and passes the pointerEvent
 /// to the painter, and gets touched spot, and wraps it into a concrete [BarTouchResponse].
 class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
@@ -604,6 +600,7 @@ class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
     bool? enabled,
     BaseTouchCallback<BarTouchResponse>? touchCallback,
     MouseCursorResolver<BarTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     BarTouchTooltipData? touchTooltipData,
     EdgeInsets? touchExtraThreshold,
     bool? allowTouchBarBackDraw,
@@ -612,7 +609,12 @@ class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
         touchExtraThreshold = touchExtraThreshold ?? const EdgeInsets.all(4),
         allowTouchBarBackDraw = allowTouchBarBackDraw ?? false,
         handleBuiltInTouches = handleBuiltInTouches ?? true,
-        super(enabled ?? true, touchCallback, mouseCursorResolver);
+        super(
+          enabled ?? true,
+          touchCallback,
+          mouseCursorResolver,
+          longPressDuration,
+        );
 
   /// Configs of how touch tooltip popup.
   final BarTouchTooltipData touchTooltipData;
@@ -633,6 +635,7 @@ class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
     bool? enabled,
     BaseTouchCallback<BarTouchResponse>? touchCallback,
     MouseCursorResolver<BarTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     BarTouchTooltipData? touchTooltipData,
     EdgeInsets? touchExtraThreshold,
     bool? allowTouchBarBackDraw,
@@ -642,6 +645,7 @@ class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
       enabled: enabled ?? this.enabled,
       touchCallback: touchCallback ?? this.touchCallback,
       mouseCursorResolver: mouseCursorResolver ?? this.mouseCursorResolver,
+      longPressDuration: longPressDuration ?? this.longPressDuration,
       touchTooltipData: touchTooltipData ?? this.touchTooltipData,
       touchExtraThreshold: touchExtraThreshold ?? this.touchExtraThreshold,
       allowTouchBarBackDraw:
@@ -652,10 +656,12 @@ class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         enabled,
         touchCallback,
         mouseCursorResolver,
+        longPressDuration,
         touchTooltipData,
         touchExtraThreshold,
         allowTouchBarBackDraw,
@@ -695,6 +701,8 @@ class BarTouchTooltipData with EquatableMixin {
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
     double? tooltipMargin,
+    FLHorizontalAlignment? tooltipHorizontalAlignment,
+    double? tooltipHorizontalOffset,
     double? maxContentWidth,
     GetBarTooltipItem? getTooltipItem,
     bool? fitInsideHorizontally,
@@ -702,11 +710,15 @@ class BarTouchTooltipData with EquatableMixin {
     TooltipDirection? direction,
     double? rotateAngle,
     BorderSide? tooltipBorder,
-  })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
+  })
+      : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         tooltipMargin = tooltipMargin ?? 16,
+        tooltipHorizontalAlignment =
+            tooltipHorizontalAlignment ?? FLHorizontalAlignment.center,
+        tooltipHorizontalOffset = tooltipHorizontalOffset ?? 0,
         maxContentWidth = maxContentWidth ?? 120,
         getTooltipItem = getTooltipItem ?? defaultBarTooltipItem,
         fitInsideHorizontally = fitInsideHorizontally ?? false,
@@ -727,6 +739,12 @@ class BarTouchTooltipData with EquatableMixin {
 
   /// Applies a bottom margin for showing tooltip on top of rods.
   final double tooltipMargin;
+
+  /// Controls showing tooltip on left side, right side or center aligned with rod, default is center
+  final FLHorizontalAlignment tooltipHorizontalAlignment;
+
+  /// Applies horizontal offset for showing tooltip, default is zero.
+  final double tooltipHorizontalOffset;
 
   /// Restricts the tooltip's width.
   final double maxContentWidth;
@@ -751,11 +769,14 @@ class BarTouchTooltipData with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,
         tooltipMargin,
+        tooltipHorizontalAlignment,
+        tooltipHorizontalOffset,
         maxContentWidth,
         getTooltipItem,
         fitInsideHorizontally,

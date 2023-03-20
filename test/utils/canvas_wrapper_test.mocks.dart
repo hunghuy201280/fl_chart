@@ -60,6 +60,10 @@ class _FakeBorderSide_3 extends _i1.SmartFake implements _i3.BorderSide {
           parent,
           parentInvocation,
         );
+
+  @override
+  String toString({_i3.DiagnosticLevel? minLevel = _i3.DiagnosticLevel.info}) =>
+      super.toString();
 }
 
 class _FakeTextStyle_4 extends _i1.SmartFake implements _i3.TextStyle {
@@ -107,6 +111,7 @@ class MockCanvas extends _i1.Mock implements _i2.Canvas {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   void restore() => super.noSuchMethod(
         Invocation.method(
@@ -115,6 +120,16 @@ class MockCanvas extends _i1.Mock implements _i2.Canvas {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  void restoreToCount(int? count) => super.noSuchMethod(
+        Invocation.method(
+          #restoreToCount,
+          [count],
+        ),
+        returnValueForMissingStub: null,
+      );
+
   @override
   int getSaveCount() => (super.noSuchMethod(
         Invocation.method(

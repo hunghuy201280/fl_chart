@@ -1,5 +1,5 @@
 # RadarChart
-<img src="https://github.com/imaNNeoFighT/fl_chart/raw/master/repo_files/images/radar_chart/radar_chart_sample_1.jpg" width="300" >
+<img src="https://github.com/imaNNeo/fl_chart/raw/master/repo_files/images/radar_chart/radar_chart_sample_1.jpg" width="300" >
 
 ### How to use
 ```dart
@@ -47,11 +47,13 @@ When you change the chart's state, it animates to the new state internally (usin
 |value| RadarChart uses this field to render every point in chart.| null |
 
 ### RadarTouchData ([read about touch handling](handle_touches.md))
+
 |PropName|Description|default value|
 |:-------|:----------|:------------|
 |enabled|determines to enable or disable touch behaviors|true|
-|mouseCursorResolver|you can change the mouse cursor based on the provided [FlTouchEvent](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/base_chart.md#fltouchevent) and [RadarTouchResponse](#RadarTouchResponse)|MouseCursor.defer|
-|touchCallback| listen to this callback to retrieve touch/pointer events and responses, it gives you a [FlTouchEvent](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/base_chart.md#fltouchevent) and [RadarTouchResponse](#RadarTouchResponse)| null|
+|mouseCursorResolver|you can change the mouse cursor based on the provided [FlTouchEvent](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/base_chart.md#fltouchevent) and [RadarTouchResponse](#RadarTouchResponse)|MouseCursor.defer|
+|touchCallback| listen to this callback to retrieve touch/pointer events and responses, it gives you a [FlTouchEvent](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/base_chart.md#fltouchevent) and [RadarTouchResponse](#RadarTouchResponse)| null|
+|longPressDuration| allows to customize the duration of the longPress gesture. If null, the duration of the longPressGesture is [kLongPressTimeout](https://api.flutter.dev/flutter/gestures/kLongPressTimeout-constant.html)| null|
 |touchSpotThreshold|the threshold of the touch accuracy. we find the nearest spots on touched position based on this field.|10|
 
 
@@ -69,12 +71,16 @@ When you change the chart's state, it animates to the new state internally (usin
 |touchedRadarEntryIndex| index of the [RadarEntry](#RadarEntry) that user touched| null |
 
 ### RadarChartTitle
+
 |PropName|Description|default value|
 |:-------|:----------|:------------|
 |text|the text of the title|required|
 |angle|the angle used to rotate the title (in degree)|0|
+|positionPercentageOffset|this field is the place of showing title. The higher the value of this field, the more titles move away from the chart. this field should be between 0 and 1|null|
 
 ### some samples
 ----
-##### Sample 1 ([Source Code](/example/lib/radar_chart/samples/radar_chart_sample1.dart))
-<img src="https://github.com/imaNNeoFighT/fl_chart/raw/master/repo_files/images/radar_chart/radar_chart_sample_1.jpg" width="300" >
+
+##### Sample 1 ([Source Code](/example/lib/presentation/samples/radar/radar_chart_sample1.dart))
+
+<img src="https://github.com/imaNNeo/fl_chart/raw/master/repo_files/images/radar_chart/radar_chart_sample_1.jpg" width="300" >

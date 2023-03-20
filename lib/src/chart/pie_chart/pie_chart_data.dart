@@ -271,7 +271,7 @@ class PieChartSectionData {
 
 /// Holds data to handle touch events, and touch responses in the [PieChart].
 ///
-/// There is a touch flow, explained [here](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
+/// There is a touch flow, explained [here](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
 /// in a simple way, each chart's renderer captures the touch events, and passes the pointerEvent
 /// to the painter, and gets touched spot, and wraps it into a concrete [PieTouchResponse].
 class PieTouchData extends FlTouchData<PieTouchResponse> with EquatableMixin {
@@ -288,14 +288,22 @@ class PieTouchData extends FlTouchData<PieTouchResponse> with EquatableMixin {
     bool? enabled,
     BaseTouchCallback<PieTouchResponse>? touchCallback,
     MouseCursorResolver<PieTouchResponse>? mouseCursorResolver,
-  }) : super(enabled ?? true, touchCallback, mouseCursorResolver);
+    Duration? longPressDuration,
+  }) : super(
+          enabled ?? true,
+          touchCallback,
+          mouseCursorResolver,
+          longPressDuration,
+        );
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         enabled,
         touchCallback,
         mouseCursorResolver,
+        longPressDuration,
       ];
 }
 

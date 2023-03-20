@@ -235,7 +235,9 @@ class RadarChartPainter extends BaseChartPainter<RadarChartData> {
         ..text = span
         ..layout();
       final angle = diffAngle * index - pi / 2;
-      final threshold = 1.0 + data.titlePositionPercentageOffset;
+      final threshold = 1.0 +
+          (title.positionPercentageOffset ??
+              data.titlePositionPercentageOffset);
       final titleX = centerX +
           cos(angle) * (radius * threshold + (_titleTextPaint.height / 2));
       final titleY = centerY +
@@ -375,7 +377,9 @@ class RadarChartPainter extends BaseChartPainter<RadarChartData> {
     final centerY = radarCenterY(viewSize);
     final radius = radarRadius(viewSize);
 
-    final scale = radius / data.maxEntry.value;
+    final maxValue = data.maxEntry.value;
+    final scale = maxValue == 0 ? 0 : radius / maxValue;
+
     final angle = (2 * pi) / data.titleCount;
 
     final dataSetsPosition = List<RadarDataSetsPosition>.filled(
@@ -410,5 +414,6 @@ class RadarChartPainter extends BaseChartPainter<RadarChartData> {
 
 class RadarDataSetsPosition {
   const RadarDataSetsPosition(this.entriesOffset);
+
   final List<Offset> entriesOffset;
 }

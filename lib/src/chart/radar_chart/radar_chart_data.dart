@@ -18,13 +18,23 @@ enum RadarShape {
 }
 
 class RadarChartTitle {
-  const RadarChartTitle({required this.text, this.angle = 0});
+  const RadarChartTitle({
+    required this.text,
+    this.angle = 0,
+    this.positionPercentageOffset,
+  });
 
   /// [text] is used to draw titles outside the [RadarChart]
   final String text;
 
   /// [angle] is used to rotate the title
   final double angle;
+
+  /// [positionPercentageOffset] is the place of showing title on the [RadarChart]
+  /// The higher the value of this field, the more titles move away from the chart.
+  /// The value of [positionPercentageOffset] takes precedence over the value of
+  /// [RadarChartData.titlePositionPercentageOffset], even if it is set.
+  final double? positionPercentageOffset;
 }
 
 /// [RadarChart] needs this class to render itself.
@@ -365,7 +375,7 @@ class RadarEntry with EquatableMixin {
 
 /// Holds data to handle touch events, and touch responses in the [RadarChart].
 ///
-/// There is a touch flow, explained [here](https://github.com/imaNNeoFighT/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
+/// There is a touch flow, explained [here](https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/handle_touches.md)
 /// in a simple way, each chart's renderer captures the touch events, and passes the pointerEvent
 /// to the painter, and gets touched spot, and wraps it into a concrete [RadarTouchResponse].
 class RadarTouchData extends FlTouchData<RadarTouchResponse>
@@ -383,19 +393,27 @@ class RadarTouchData extends FlTouchData<RadarTouchResponse>
     bool? enabled,
     BaseTouchCallback<RadarTouchResponse>? touchCallback,
     MouseCursorResolver<RadarTouchResponse>? mouseCursorResolver,
+    Duration? longPressDuration,
     double? touchSpotThreshold,
   })  : touchSpotThreshold = touchSpotThreshold ?? 10,
-        super(enabled ?? true, touchCallback, mouseCursorResolver);
+        super(
+          enabled ?? true,
+          touchCallback,
+          mouseCursorResolver,
+          longPressDuration,
+        );
 
   /// we find the nearest spots on touched position based on this threshold
   final double touchSpotThreshold;
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         enabled,
         touchCallback,
         mouseCursorResolver,
+        longPressDuration,
         touchSpotThreshold,
       ];
 }

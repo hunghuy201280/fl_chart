@@ -178,6 +178,7 @@ class MockCanvas extends _i1.Mock implements _i2.Canvas {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   void restore() => super.noSuchMethod(
         Invocation.method(
@@ -186,6 +187,16 @@ class MockCanvas extends _i1.Mock implements _i2.Canvas {
         ),
         returnValueForMissingStub: null,
       );
+
+  @override
+  void restoreToCount(int? count) => super.noSuchMethod(
+        Invocation.method(
+          #restoreToCount,
+          [count],
+        ),
+        returnValueForMissingStub: null,
+      );
+
   @override
   int getSaveCount() => (super.noSuchMethod(
         Invocation.method(
@@ -194,6 +205,7 @@ class MockCanvas extends _i1.Mock implements _i2.Canvas {
         ),
         returnValue: 0,
       ) as int);
+
   @override
   void translate(
     double? dx,
@@ -1043,11 +1055,19 @@ class MockBuildContext extends _i1.Mock implements _i6.BuildContext {
           Invocation.getter(#widget),
         ),
       ) as _i6.Widget);
+
+  @override
+  bool get mounted => (super.noSuchMethod(
+        Invocation.getter(#mounted),
+        returnValue: false,
+      ) as bool);
+
   @override
   bool get debugDoingBuild => (super.noSuchMethod(
         Invocation.getter(#debugDoingBuild),
         returnValue: false,
       ) as bool);
+
   @override
   _i6.InheritedWidget dependOnInheritedElement(
     _i6.InheritedElement? ancestor, {

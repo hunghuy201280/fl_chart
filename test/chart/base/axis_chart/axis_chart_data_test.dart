@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../../data_pool.dart';
 
 void main() {
@@ -29,6 +30,34 @@ void main() {
       expect(MockData.sideTitles1 == MockData.sideTitles4, false);
       expect(MockData.sideTitles1 == MockData.sideTitles5, false);
       expect(MockData.sideTitles1 == MockData.sideTitles6, false);
+    });
+
+    test('SideTitleFitInsideData equality test', () {
+      expect(
+        MockData.sideTitleFitInsideData1 ==
+            MockData.sideTitleFitInsideData1Clone,
+        true,
+      );
+      expect(
+        MockData.sideTitleFitInsideData1 == MockData.sideTitleFitInsideData2,
+        false,
+      );
+      expect(
+        MockData.sideTitleFitInsideData1 == MockData.sideTitleFitInsideData3,
+        false,
+      );
+      expect(
+        MockData.sideTitleFitInsideData1 == MockData.sideTitleFitInsideData4,
+        false,
+      );
+      expect(
+        MockData.sideTitleFitInsideData1 == MockData.sideTitleFitInsideData5,
+        false,
+      );
+      expect(
+        MockData.sideTitleFitInsideData1 == MockData.sideTitleFitInsideData6,
+        false,
+      );
     });
 
     test('FlSpot equality test', () {

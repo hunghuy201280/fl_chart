@@ -63,7 +63,25 @@ class BarChartPainter extends AxisChartPainter<BarChartData> {
       data.barGroups,
     );
 
+    if (!data.extraLinesData.extraLinesOnTop) {
+      super.drawHorizontalLines(
+        context,
+        canvasWrapper,
+        holder,
+        canvasWrapper.size,
+      );
+    }
+
     drawBars(canvasWrapper, _groupBarsPosition!, holder);
+
+    if (data.extraLinesData.extraLinesOnTop) {
+      super.drawHorizontalLines(
+        context,
+        canvasWrapper,
+        holder,
+        canvasWrapper.size,
+      );
+    }
 
     for (var i = 0; i < targetData.barGroups.length; i++) {
       final barGroup = targetData.barGroups[i];
@@ -373,10 +391,17 @@ class BarChartPainter extends AxisChartPainter<BarChartData> {
         ? barTopY - tooltipHeight - tooltipData.tooltipMargin
         : barBottomY + tooltipData.tooltipMargin;
 
+    final tooltipLeft = getTooltipLeft(
+      barOffset.dx,
+      tooltipWidth,
+      tooltipData.tooltipHorizontalAlignment,
+      tooltipData.tooltipHorizontalOffset,
+    );
+
     /// draw the background rect with rounded radius
     // ignore: omit_local_variable_types
     Rect rect = Rect.fromLTWH(
-      barOffset.dx - (tooltipWidth / 2),
+      tooltipLeft,
       tooltipTop,
       tooltipWidth,
       tooltipHeight,

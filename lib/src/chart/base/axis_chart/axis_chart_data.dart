@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fl_chart/src/chart/base/axis_chart/axis_chart_painter.dart';
 import 'package:fl_chart/src/utils/lerp.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
 
 /// This is the base class for axis base charts data
 /// that contains a [FlGridData] that holds data for showing grid lines,
@@ -28,12 +28,14 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
     Color? backgroundColor,
     super.borderData,
     required super.touchData,
+    ExtraLinesData? extraLinesData,
   })  : gridData = gridData ?? FlGridData(),
         rangeAnnotations = rangeAnnotations ?? RangeAnnotations(),
         baselineX = baselineX ?? 0,
         baselineY = baselineY ?? 0,
         clipData = clipData ?? FlClipData.none(),
-        backgroundColor = backgroundColor ?? Colors.transparent;
+        backgroundColor = backgroundColor ?? Colors.transparent,
+        extraLinesData = extraLinesData ?? ExtraLinesData();
   final FlGridData gridData;
   final FlTitlesData titlesData;
   final RangeAnnotations rangeAnnotations;
@@ -48,7 +50,7 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
   /// clip the chart to the border (prevent draw outside the border)
   FlClipData clipData;
 
-  /// A background color which is drawn behind th chart.
+  /// A background color which is drawn behind the chart.
   Color backgroundColor;
 
   /// Difference of [maxY] and [minY]
@@ -56,6 +58,9 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
 
   /// Difference of [maxX] and [minX]
   double get horizontalDiff => maxX - minX;
+
+  /// Extra horizontal or vertical lines to draw on the chart.
+  final ExtraLinesData extraLinesData;
 
   /// Used for equality check, see [EquatableMixin].
   @override
@@ -73,6 +78,7 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
         backgroundColor,
         borderData,
         touchData,
+        extraLinesData,
       ];
 }
 
@@ -84,6 +90,8 @@ class TitleMeta {
   TitleMeta({
     required this.min,
     required this.max,
+    required this.parentAxisSize,
+    required this.axisPosition,
     required this.appliedInterval,
     required this.sideTitles,
     required this.formattedValue,
@@ -95,6 +103,13 @@ class TitleMeta {
 
   /// max axis value
   final double max;
+
+  /// parent axis max width/height
+  final double parentAxisSize;
+
+  /// The position (in pixel) that applied to
+  /// this drawing title along its axis.
+  final double axisPosition;
 
   /// The interval that applied to this drawing title
   final double appliedInterval;
@@ -205,6 +220,78 @@ class SideTitles with EquatableMixin {
       ];
 }
 
+/// Force child widget to be positioned inside its
+/// corresponding axis bounding box
+///
+/// To makes things simpler, it's recommended to use
+/// [SideTitleFitInsideData.fromTitleMeta] and pass the
+/// TitleMeta provided from [SideTitles.getTitlesWidget]
+class SideTitleFitInsideData with EquatableMixin {
+  /// Force child widget to be positioned inside its
+  /// corresponding axis bounding box
+  ///
+  /// To makes things simpler, it's recommended to use
+  /// [SideTitleFitInsideData.fromTitleMeta] and pass the
+  /// TitleMeta provided from [SideTitles.getTitlesWidget]
+  ///
+  /// Some translations will be applied to force
+  /// children to be positioned inside the parent axis bounding box.
+  ///
+  /// Will override the [SideTitleWidget.space] and caused
+  /// spacing between [SideTitles] children might be not equal.
+  const SideTitleFitInsideData({
+    required this.enabled,
+    required this.axisPosition,
+    required this.parentAxisSize,
+    required this.distanceFromEdge,
+  });
+
+  /// Create a disabled [SideTitleFitInsideData].
+  /// If used, the child widget wouldn't be fitted
+  /// inside its corresponding axis bounding box
+  factory SideTitleFitInsideData.disable() => const SideTitleFitInsideData(
+        enabled: false,
+        distanceFromEdge: 0,
+        parentAxisSize: 0,
+        axisPosition: 0,
+      );
+
+  /// Help to Create [SideTitleFitInsideData] from [TitleMeta].
+  /// [TitleMeta] is provided by [SideTitles.getTitlesWidget] function.
+  factory SideTitleFitInsideData.fromTitleMeta(
+    TitleMeta meta, {
+    bool enabled = true,
+    double distanceFromEdge = 6,
+  }) =>
+      SideTitleFitInsideData(
+        enabled: enabled,
+        distanceFromEdge: distanceFromEdge,
+        parentAxisSize: meta.parentAxisSize,
+        axisPosition: meta.axisPosition,
+      );
+
+  /// Whether to enable fit inside to SideTitleWidget
+  final bool enabled;
+
+  /// Distance between child widget and its closest corresponding axis edge
+  final double distanceFromEdge;
+
+  /// Parent axis max width/height
+  final double parentAxisSize;
+
+  /// The position (in pixel) that applied to
+  /// the child widget along its corresponding axis.
+  final double axisPosition;
+
+  @override
+  List<Object?> get props => [
+        enabled,
+        distanceFromEdge,
+        parentAxisSize,
+        axisPosition,
+      ];
+}
+
 /// Holds data for showing each side titles (left, top, right, bottom)
 class AxisTitles with EquatableMixin {
   /// you can provide [axisName] if you want to show a general
@@ -220,7 +307,7 @@ class AxisTitles with EquatableMixin {
     bool? drawBehindEverything,
   })  : axisNameSize = axisNameSize ?? 16,
         sideTitles = sideTitles ?? SideTitles(),
-        drawBelowEverything = drawBehindEverything ?? false;
+        drawBelowEverything = drawBehindEverything ?? true;
 
   /// Determines the size of [axisName]
   final double axisNameSize;
@@ -839,5 +926,359 @@ class VerticalRangeAnnotation with EquatableMixin {
         x1,
         x2,
         color,
+      ];
+}
+
+/// Holds data for drawing extra horizontal lines.
+///
+/// [LineChart] draws some [HorizontalLine] (set by [LineChartData.extraLinesData]),
+/// in below or above of everything, it draws from left to right side of the chart.
+class HorizontalLine extends FlLine with EquatableMixin {
+  /// [LineChart] draws horizontal lines from left to right side of the chart
+  /// in the provided [y] value, and color it using [color].
+  /// You can define the thickness using [strokeWidth]
+  ///
+  /// It draws a [label] over it.
+  ///
+  /// You can have a dashed line by filling [dashArray] with dash size and space respectively.
+  ///
+  /// It draws an image in left side of the chart, use [sizedPicture] for vectors,
+  /// or [image] for any kind of image.
+  HorizontalLine({
+    required this.y,
+    HorizontalLineLabel? label,
+    Color? color,
+    double? strokeWidth,
+    super.dashArray,
+    this.image,
+    this.sizedPicture,
+  })  : label = label ?? HorizontalLineLabel(),
+        super(
+          color: color ?? Colors.black,
+          strokeWidth: strokeWidth ?? 2,
+        );
+
+  /// Draws from left to right of the chart using the [y] value.
+  final double y;
+
+  /// Use it for any kind of image, to draw it in left side of the chart.
+  Image? image;
+
+  /// Use it for vector images, to draw it in left side of the chart.
+  SizedPicture? sizedPicture;
+
+  /// Draws a text label over the line.
+  final HorizontalLineLabel label;
+
+  /// Lerps a [HorizontalLine] based on [t] value, check [Tween.lerp].
+  static HorizontalLine lerp(HorizontalLine a, HorizontalLine b, double t) {
+    return HorizontalLine(
+      y: lerpDouble(a.y, b.y, t)!,
+      label: HorizontalLineLabel.lerp(a.label, b.label, t),
+      color: Color.lerp(a.color, b.color, t),
+      strokeWidth: lerpDouble(a.strokeWidth, b.strokeWidth, t),
+      dashArray: lerpIntList(a.dashArray, b.dashArray, t),
+      image: b.image,
+      sizedPicture: b.sizedPicture,
+    );
+  }
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        y,
+        label,
+        color,
+        strokeWidth,
+        dashArray,
+        image,
+        sizedPicture,
+      ];
+}
+
+/// Holds data for drawing extra vertical lines.
+///
+/// [LineChart] draws some [VerticalLine] (set by [LineChartData.extraLinesData]),
+/// in below or above of everything, it draws from bottom to top side of the chart.
+class VerticalLine extends FlLine with EquatableMixin {
+  /// [LineChart] draws vertical lines from bottom to top side of the chart
+  /// in the provided [x] value, and color it using [color].
+  /// You can define the thickness using [strokeWidth]
+  ///
+  /// It draws a [label] over it.
+  ///
+  /// You can have a dashed line by filling [dashArray] with dash size and space respectively.
+  ///
+  /// It draws an image in bottom side of the chart, use [sizedPicture] for vectors,
+  /// or [image] for any kind of image.
+  VerticalLine({
+    required this.x,
+    VerticalLineLabel? label,
+    Color? color,
+    double? strokeWidth,
+    super.dashArray,
+    this.image,
+    this.sizedPicture,
+  })  : label = label ?? VerticalLineLabel(),
+        super(
+          color: color ?? Colors.black,
+          strokeWidth: strokeWidth ?? 2,
+        );
+
+  /// Draws from bottom to top of the chart using the [x] value.
+  final double x;
+
+  /// Use it for any kind of image, to draw it in bottom side of the chart.
+  Image? image;
+
+  /// Use it for vector images, to draw it in bottom side of the chart.
+  SizedPicture? sizedPicture;
+
+  /// Draws a text label over the line.
+  final VerticalLineLabel label;
+
+  /// Lerps a [VerticalLine] based on [t] value, check [Tween.lerp].
+  static VerticalLine lerp(VerticalLine a, VerticalLine b, double t) {
+    return VerticalLine(
+      x: lerpDouble(a.x, b.x, t)!,
+      label: VerticalLineLabel.lerp(a.label, b.label, t),
+      color: Color.lerp(a.color, b.color, t),
+      strokeWidth: lerpDouble(a.strokeWidth, b.strokeWidth, t),
+      dashArray: lerpIntList(a.dashArray, b.dashArray, t),
+      image: b.image,
+      sizedPicture: b.sizedPicture,
+    );
+  }
+
+  /// Copies current [VerticalLine] to a new [VerticalLine]
+  /// and replaces provided values.
+  VerticalLine copyVerticalLineWith({
+    double? x,
+    VerticalLineLabel? label,
+    Color? color,
+    double? strokeWidth,
+    List<int>? dashArray,
+    Image? image,
+    SizedPicture? sizedPicture,
+  }) {
+    return VerticalLine(
+      x: x ?? this.x,
+      label: label ?? this.label,
+      color: color ?? this.color,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+      dashArray: dashArray ?? this.dashArray,
+      image: image ?? this.image,
+      sizedPicture: sizedPicture ?? this.sizedPicture,
+    );
+  }
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        x,
+        label,
+        color,
+        strokeWidth,
+        dashArray,
+        image,
+        sizedPicture,
+      ];
+}
+
+/// Draws a title on the [HorizontalLine]
+class HorizontalLineLabel extends FlLineLabel with EquatableMixin {
+  /// Draws a title on the [HorizontalLine], align it with [alignment] over the line,
+  /// applies [padding] for spaces, and applies [style for changing color,
+  /// size, ... of the text.
+  /// Drawing text will retrieve through [labelResolver],
+  /// you can override it with your custom data.
+  /// /// [show] determines showing label or not.
+  HorizontalLineLabel({
+    EdgeInsets? padding,
+    super.style,
+    Alignment? alignment,
+    super.show = false,
+    String Function(HorizontalLine)? labelResolver,
+  })  : labelResolver =
+            labelResolver ?? HorizontalLineLabel.defaultLineLabelResolver,
+        super(
+          padding: padding ?? const EdgeInsets.all(6),
+          alignment: alignment ?? Alignment.topLeft,
+        );
+
+  /// Resolves a label for showing.
+  final String Function(HorizontalLine) labelResolver;
+
+  /// Returns the [HorizontalLine.y] as the drawing label.
+  static String defaultLineLabelResolver(HorizontalLine line) =>
+      line.y.toStringAsFixed(1);
+
+  /// Lerps a [HorizontalLineLabel] based on [t] value, check [Tween.lerp].
+  static HorizontalLineLabel lerp(
+    HorizontalLineLabel a,
+    HorizontalLineLabel b,
+    double t,
+  ) {
+    return HorizontalLineLabel(
+      padding:
+          EdgeInsets.lerp(a.padding as EdgeInsets, b.padding as EdgeInsets, t),
+      style: TextStyle.lerp(a.style, b.style, t),
+      alignment: Alignment.lerp(a.alignment, b.alignment, t),
+      labelResolver: b.labelResolver,
+      show: b.show,
+    );
+  }
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        labelResolver,
+        show,
+        padding,
+        style,
+        alignment,
+      ];
+}
+
+/// Draws a title on the [VerticalLine]
+class VerticalLineLabel extends FlLineLabel with EquatableMixin {
+  /// Draws a title on the [VerticalLine], align it with [alignment] over the line,
+  /// applies [padding] for spaces, and applies [style for changing color,
+  /// size, ... of the text.
+  /// Drawing text will retrieve through [labelResolver],
+  /// you can override it with your custom data.
+  /// [show] determines showing label or not.
+  VerticalLineLabel({
+    EdgeInsets? padding,
+    TextStyle? style,
+    Alignment? alignment,
+    bool? show,
+    String Function(VerticalLine)? labelResolver,
+  })  : labelResolver =
+            labelResolver ?? VerticalLineLabel.defaultLineLabelResolver,
+        super(
+          show: show ?? false,
+          padding: padding ?? const EdgeInsets.all(6),
+          style: style ??
+              const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+          alignment: alignment ?? Alignment.bottomRight,
+        );
+
+  /// Resolves a label for showing.
+  final String Function(VerticalLine) labelResolver;
+
+  /// Returns the [VerticalLine.x] as the drawing label.
+  static String defaultLineLabelResolver(VerticalLine line) =>
+      line.x.toStringAsFixed(1);
+
+  /// Lerps a [VerticalLineLabel] based on [t] value, check [Tween.lerp].
+  static VerticalLineLabel lerp(
+    VerticalLineLabel a,
+    VerticalLineLabel b,
+    double t,
+  ) {
+    return VerticalLineLabel(
+      padding:
+          EdgeInsets.lerp(a.padding as EdgeInsets, b.padding as EdgeInsets, t),
+      style: TextStyle.lerp(a.style, b.style, t),
+      alignment: Alignment.lerp(a.alignment, b.alignment, t),
+      labelResolver: b.labelResolver,
+      show: b.show,
+    );
+  }
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        labelResolver,
+        show,
+        padding,
+        style,
+        alignment,
+      ];
+}
+
+/// Holds data for showing a vector image inside the chart.
+///
+/// for example:
+/// ```
+/// Future<SizedPicture> loadSvg() async {
+///    const String rawSvg = 'your svg string';
+///    final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
+///    final sizedPicture = SizedPicture(svgRoot.toPicture(), 14, 14);
+///    return sizedPicture;
+///  }
+/// ```
+class SizedPicture with EquatableMixin {
+  /// [picture] is the showing image,
+  /// it can retrieve from a svg icon,
+  /// for example:
+  /// ```
+  ///    const String rawSvg = 'your svg string';
+  ///    final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
+  ///    final picture = svgRoot.toPicture()
+  /// ```
+  /// [width] and [height] determines the size of our picture.
+  SizedPicture(this.picture, this.width, this.height);
+
+  /// Is the showing image.
+  Picture picture;
+
+  /// width of our [picture].
+  int width;
+
+  /// height of our [picture].
+  int height;
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        picture,
+        width,
+        height,
+      ];
+}
+
+/// Draws some straight horizontal or vertical lines in the [LineChart]
+class ExtraLinesData with EquatableMixin {
+  /// [LineChart] draws some straight horizontal or vertical lines,
+  /// you should set [LineChartData.extraLinesData].
+  /// Draws horizontal lines using [horizontalLines],
+  /// and vertical lines using [verticalLines].
+  ///
+  /// If [extraLinesOnTop] sets true, it draws the line above the main bar lines, otherwise
+  /// it draws them below the main bar lines.
+  ExtraLinesData({
+    List<HorizontalLine>? horizontalLines,
+    List<VerticalLine>? verticalLines,
+    bool? extraLinesOnTop,
+  })  : horizontalLines = horizontalLines ?? const [],
+        verticalLines = verticalLines ?? const [],
+        extraLinesOnTop = extraLinesOnTop ?? true;
+  final List<HorizontalLine> horizontalLines;
+  final List<VerticalLine> verticalLines;
+
+  final bool extraLinesOnTop;
+
+  /// Lerps a [ExtraLinesData] based on [t] value, check [Tween.lerp].
+  static ExtraLinesData lerp(ExtraLinesData a, ExtraLinesData b, double t) {
+    return ExtraLinesData(
+      extraLinesOnTop: b.extraLinesOnTop,
+      horizontalLines:
+          lerpHorizontalLineList(a.horizontalLines, b.horizontalLines, t),
+      verticalLines: lerpVerticalLineList(a.verticalLines, b.verticalLines, t),
+    );
+  }
+
+  /// Used for equality check, see [EquatableMixin].
+  @override
+  List<Object?> get props => [
+        horizontalLines,
+        verticalLines,
+        extraLinesOnTop,
       ];
 }
