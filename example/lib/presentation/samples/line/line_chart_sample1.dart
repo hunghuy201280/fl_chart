@@ -231,7 +231,7 @@ class _LineChart extends StatelessWidget {
       );
 
   LineChartBarData get lineChartBarData2_1 => LineChartBarData(
-    isCurved: true,
+        isCurved: true,
         curveSmoothness: 0,
         color: AppColors.contentColorGreen.withOpacity(0.5),
         barWidth: 4,
