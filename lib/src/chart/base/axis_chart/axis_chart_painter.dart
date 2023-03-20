@@ -13,19 +13,16 @@ import 'package:flutter/material.dart';
 /// in child classes -> [BarChartPainter], [LineChartPainter]
 /// [dataList] is the currently showing data (it may produced by an animation using lerp function),
 /// [targetData] is the target data, that animation is going to show (if animating)
-abstract class AxisChartPainter<D extends AxisChartData> extends BaseChartPainter<D> {
+abstract class AxisChartPainter<D extends AxisChartData>
+    extends BaseChartPainter<D> {
   AxisChartPainter() : super() {
-    _gridPaint = Paint()
-      ..style = PaintingStyle.stroke;
+    _gridPaint = Paint()..style = PaintingStyle.stroke;
 
-    _backgroundPaint = Paint()
-      ..style = PaintingStyle.fill;
+    _backgroundPaint = Paint()..style = PaintingStyle.fill;
 
-    _rangeAnnotationPaint = Paint()
-      ..style = PaintingStyle.fill;
+    _rangeAnnotationPaint = Paint()..style = PaintingStyle.fill;
 
-    _extraLinesPaint = Paint()
-      ..style = PaintingStyle.stroke;
+    _extraLinesPaint = Paint()..style = PaintingStyle.stroke;
 
     _imagePaint = Paint();
   }
@@ -40,9 +37,11 @@ abstract class AxisChartPainter<D extends AxisChartData> extends BaseChartPainte
 
   /// Paints [AxisChartData] into the provided canvas.
   @override
-  void paint(BuildContext context,
-      CanvasWrapper canvasWrapper,
-      PaintHolder<D> holder,) {
+  void paint(
+    BuildContext context,
+    CanvasWrapper canvasWrapper,
+    PaintHolder<D> holder,
+  ) {
     super.paint(context, canvasWrapper, holder);
     drawBackground(canvasWrapper, holder);
     drawRangeAnnotation(canvasWrapper, holder);
@@ -172,7 +171,7 @@ abstract class AxisChartPainter<D extends AxisChartData> extends BaseChartPainte
 
     if (data.rangeAnnotations.horizontalRangeAnnotations.isNotEmpty) {
       for (final annotation
-      in data.rangeAnnotations.horizontalRangeAnnotations) {
+          in data.rangeAnnotations.horizontalRangeAnnotations) {
         final from = Offset(0, getPixelY(annotation.y1, viewSize, holder));
         final to = Offset(
           viewSize.width,

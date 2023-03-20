@@ -2449,7 +2449,7 @@ final ScatterTouchTooltipData scatterTouchTooltipData1Clone =
 );
 final ScatterTouchTooltipData scatterTouchTooltipData2 =
     ScatterTouchTooltipData(
-      tooltipRoundedRadius: 23,
+  tooltipRoundedRadius: 23,
   tooltipPadding: const EdgeInsets.all(11),
   tooltipBgColor: Colors.green,
   maxContentWidth: 33,
@@ -2461,7 +2461,7 @@ final ScatterTouchTooltipData scatterTouchTooltipData2 =
 );
 final ScatterTouchTooltipData scatterTouchTooltipData3 =
     ScatterTouchTooltipData(
-      tooltipRoundedRadius: 23,
+  tooltipRoundedRadius: 23,
   tooltipPadding: const EdgeInsets.all(11),
   tooltipBgColor: Colors.green,
   maxContentWidth: 33,

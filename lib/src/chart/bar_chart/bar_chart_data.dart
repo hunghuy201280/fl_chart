@@ -656,8 +656,7 @@ class BarTouchData extends FlTouchData<BarTouchResponse> with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         enabled,
         touchCallback,
         mouseCursorResolver,
@@ -710,8 +709,7 @@ class BarTouchTooltipData with EquatableMixin {
     TooltipDirection? direction,
     double? rotateAngle,
     BorderSide? tooltipBorder,
-  })
-      : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
+  })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -769,8 +767,7 @@ class BarTouchTooltipData with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,

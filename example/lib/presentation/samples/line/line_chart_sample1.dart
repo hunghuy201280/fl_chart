@@ -166,7 +166,7 @@ class _LineChart extends StatelessWidget {
   FlGridData get gridData => FlGridData(show: false);
 
   FlBorderData get borderData => FlBorderData(
-    show: true,
+        show: true,
         border: Border(
           bottom:
               BorderSide(color: AppColors.primary.withOpacity(0.2), width: 4),
@@ -177,7 +177,7 @@ class _LineChart extends StatelessWidget {
       );
 
   LineChartBarData get lineChartBarData1_1 => LineChartBarData(
-    isCurved: true,
+        isCurved: true,
         color: AppColors.contentColorGreen,
         barWidth: 8,
         isStrokeCapRound: true,
@@ -195,7 +195,7 @@ class _LineChart extends StatelessWidget {
       );
 
   LineChartBarData get lineChartBarData1_2 => LineChartBarData(
-    isCurved: true,
+        isCurved: true,
         color: AppColors.contentColorPink,
         barWidth: 8,
         isStrokeCapRound: true,
@@ -215,7 +215,7 @@ class _LineChart extends StatelessWidget {
       );
 
   LineChartBarData get lineChartBarData1_3 => LineChartBarData(
-    isCurved: true,
+        isCurved: true,
         color: AppColors.contentColorCyan,
         barWidth: 8,
         isStrokeCapRound: true,
@@ -231,7 +231,7 @@ class _LineChart extends StatelessWidget {
       );
 
   LineChartBarData get lineChartBarData2_1 => LineChartBarData(
-    isCurved: true,
+        isCurved: true,
         curveSmoothness: 0,
         color: AppColors.contentColorGreen.withOpacity(0.5),
         barWidth: 4,
@@ -250,7 +250,7 @@ class _LineChart extends StatelessWidget {
       );
 
   LineChartBarData get lineChartBarData2_2 => LineChartBarData(
-    isCurved: true,
+        isCurved: true,
         color: AppColors.contentColorPink.withOpacity(0.5),
         barWidth: 4,
         isStrokeCapRound: true,
