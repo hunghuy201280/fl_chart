@@ -166,7 +166,7 @@ class _LineChart extends StatelessWidget {
   FlGridData get gridData => FlGridData(show: false);
 
   FlBorderData get borderData => FlBorderData(
-    show: true,
+        show: true,
         border: Border(
           bottom:
               BorderSide(color: AppColors.primary.withOpacity(0.2), width: 4),

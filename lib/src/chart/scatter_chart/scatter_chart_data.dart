@@ -315,8 +315,7 @@ class ScatterTouchData extends FlTouchData<ScatterTouchResponse>
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         enabled,
         touchCallback,
         mouseCursorResolver,
@@ -407,8 +406,7 @@ class ScatterTouchTooltipData with EquatableMixin {
     bool? fitInsideVertically,
     double? rotateAngle,
     BorderSide? tooltipBorder,
-  })
-      : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
+  })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -458,8 +456,7 @@ class ScatterTouchTooltipData with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,

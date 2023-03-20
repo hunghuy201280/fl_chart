@@ -1191,8 +1191,7 @@ class LineTouchData extends FlTouchData<LineTouchResponse> with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         enabled,
         touchCallback,
         mouseCursorResolver,
@@ -1302,8 +1301,7 @@ class LineTouchTooltipData with EquatableMixin {
     bool? showOnTopOfTheChartBoxArea,
     double? rotateAngle,
     BorderSide? tooltipBorder,
-  })
-      : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
+  })  : tooltipBgColor = tooltipBgColor ?? Colors.blueGrey.darken(15),
         tooltipRoundedRadius = tooltipRoundedRadius ?? 4,
         tooltipPadding = tooltipPadding ??
             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1361,8 +1359,7 @@ class LineTouchTooltipData with EquatableMixin {
 
   /// Used for equality check, see [EquatableMixin].
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,

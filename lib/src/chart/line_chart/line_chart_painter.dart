@@ -960,9 +960,11 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
 
   @override
   @visibleForTesting
-  void drawExtraLines(BuildContext context,
-      CanvasWrapper canvasWrapper,
-      PaintHolder<LineChartData> holder,) {
+  void drawExtraLines(
+    BuildContext context,
+    CanvasWrapper canvasWrapper,
+    PaintHolder<LineChartData> holder,
+  ) {
     final data = holder.data;
     final viewSize = canvasWrapper.size;
 
@@ -1010,7 +1012,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
         if (line.label.show) {
           final label = line.label;
           final style =
-          TextStyle(fontSize: 11, color: line.color).merge(label.style);
+              TextStyle(fontSize: 11, color: line.color).merge(label.style);
           final padding = label.padding as EdgeInsets;
 
           final span = TextSpan(
@@ -1070,7 +1072,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
           final centerX = line.image!.width / 2;
           final centerY = line.image!.height / 2;
           final centeredImageOffset =
-          Offset(to.dx - centerX, viewSize.height - centerY);
+              Offset(to.dx - centerX, viewSize.height - centerY);
           canvasWrapper.drawImage(
             line.image!,
             centeredImageOffset,
@@ -1081,7 +1083,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
         if (line.label.show) {
           final label = line.label;
           final style =
-          TextStyle(fontSize: 11, color: line.color).merge(label.style);
+              TextStyle(fontSize: 11, color: line.color).merge(label.style);
           final padding = label.padding as EdgeInsets;
 
           final span = TextSpan(
