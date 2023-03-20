@@ -1354,44 +1354,11 @@ class LineTouchTooltipData with EquatableMixin {
         tooltipBorder = tooltipBorder ?? BorderSide.none,
         super();
 
-  /// The tooltip background color.
-  final Color tooltipBgColor;
-
-  /// Sets a rounded radius for the tooltip.
-  final double tooltipRoundedRadius;
-
-  /// Applies a padding for showing contents inside the tooltip.
-  final EdgeInsets tooltipPadding;
-
-  /// Applies a bottom margin for showing tooltip on top of rods.
-  final double tooltipMargin;
-
   /// Controls showing tooltip on left side, right side or center aligned with spot, default is center
   final FLHorizontalAlignment tooltipHorizontalAlignment;
 
   /// Applies horizontal offset for showing tooltip, default is zero.
   final double tooltipHorizontalOffset;
-
-  /// Restricts the tooltip's width.
-  final double maxContentWidth;
-
-  /// Retrieves data for showing content inside the tooltip.
-  final GetLineTooltipItems getTooltipItems;
-
-  /// Forces the tooltip to shift horizontally inside the chart, if overflow happens.
-  final bool fitInsideHorizontally;
-
-  /// Forces the tooltip to shift vertically inside the chart, if overflow happens.
-  final bool fitInsideVertically;
-
-  /// Forces the tooltip container to top of the line, default 'false'
-  final bool showOnTopOfTheChartBoxArea;
-
-  /// Controls the rotation of the tooltip.
-  final double rotateAngle;
-
-  /// The tooltip border color.
-  final BorderSide tooltipBorder;
 
   /// Used for equality check, see [EquatableMixin].
   @override
