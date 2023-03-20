@@ -1274,6 +1274,41 @@ double defaultGetTouchLineEnd(LineChartBarData barData, int spotIndex) {
 
 /// Holds representation data for showing tooltip popup on top of spots.
 class LineTouchTooltipData with EquatableMixin {
+  /// The tooltip background color.
+  final Color tooltipBgColor;
+
+  final double elevation;
+
+  /// Sets a rounded radius for the tooltip.
+  final double tooltipRoundedRadius;
+
+  /// Applies a padding for showing contents inside the tooltip.
+  final EdgeInsets tooltipPadding;
+
+  /// Applies a bottom margin for showing tooltip on top of rods.
+  final double tooltipMargin;
+
+  /// Restricts the tooltip's width.
+  final double maxContentWidth;
+
+  /// Retrieves data for showing content inside the tooltip.
+  final GetLineTooltipItems getTooltipItems;
+
+  /// Forces the tooltip to shift horizontally inside the chart, if overflow happens.
+  final bool fitInsideHorizontally;
+
+  /// Forces the tooltip to shift vertically inside the chart, if overflow happens.
+  final bool fitInsideVertically;
+
+  /// Forces the tooltip container to top of the line, default 'false'
+  final bool showOnTopOfTheChartBoxArea;
+
+  /// Controls the rotation of the tooltip.
+  final double rotateAngle;
+
+  /// The tooltip border color.
+  final BorderSide tooltipBorder;
+
   /// if [LineTouchData.handleBuiltInTouches] is true,
   /// [LineChart] shows a tooltip popup on top of spots automatically when touch happens,
   /// otherwise you can show it manually using [LineChartData.showingTooltipIndicators].
@@ -1289,6 +1324,7 @@ class LineTouchTooltipData with EquatableMixin {
   /// also you can set [fitInsideVertically] true to force it to shift inside the chart vertically.
   LineTouchTooltipData({
     Color? tooltipBgColor,
+    this.elevation = 0,
     double? tooltipRoundedRadius,
     EdgeInsets? tooltipPadding,
     double? tooltipMargin,
@@ -1373,6 +1409,7 @@ class LineTouchTooltipData with EquatableMixin {
         showOnTopOfTheChartBoxArea,
         rotateAngle,
         tooltipBorder,
+        elevation,
       ];
 }
 

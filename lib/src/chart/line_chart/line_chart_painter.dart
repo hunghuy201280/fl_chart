@@ -1287,6 +1287,10 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       drawOffset: rectDrawOffset,
       angle: rotateAngle,
       drawCallback: () {
+        if (tooltipData.elevation != 0) {
+          canvasWrapper.canvas.drawShadow(Path()..addRRect(roundedRect),
+              Colors.grey.withOpacity(0.5), tooltipData.elevation, false);
+        }
         canvasWrapper
           ..drawRRect(roundedRect, _bgTouchTooltipPaint)
           ..drawRRect(roundedRect, _borderTouchTooltipPaint)
@@ -1351,6 +1355,10 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       topPosSeek += tp.height;
       topPosSeek += textsBelowMargin;
     }
+  }
+
+  static double convertRadiusToSigma(double radius) {
+    return radius * 0.57735 + 0.5;
   }
 
   @visibleForTesting
